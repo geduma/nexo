@@ -110,13 +110,6 @@ nexo/
 
 The backend exposes a REST API under `/api/v1`. Swagger documentation is available at `/api/docs` when the server is running.
 
-## Default Credentials
-
-The admin account for the MVP:
-
-- **Email:** admin@nexo.com
-- **Password:** admin123
-
 > Change these before deploying to production.
 
 ## License
