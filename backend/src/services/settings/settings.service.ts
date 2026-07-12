@@ -2,18 +2,30 @@ import { settingsRepository } from "../../repositories/settings/settings.reposit
 import type { UpdateSettingsDto } from "../../validators/settings.validator.js";
 
 export class SettingsService {
+  private defaultSettings = {
+    id: "",
+    businessName: "NEXO",
+    logoUrl: null as string | null,
+    currency: "COP",
+    currencySymbol: "$",
+    defaultLanguage: "en",
+    whatsappNumber: "",
+    theme: "system" as string,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
   async get() {
-    let settings = await settingsRepository.get();
-    if (!settings) {
-      settings = await settingsRepository.create({ whatsappNumber: "" }) ?? null;
-    }
-    return settings ?? null;
+    const settings = await settingsRepository.get();
+    return settings ?? this.defaultSettings;
   }
 
   async update(data: UpdateSettingsDto) {
     const current = await settingsRepository.get();
     if (!current) {
-      return settingsRepository.create({ whatsappNumber: data.whatsappNumber ?? "" });
+      const created = await settingsRepository.create({ whatsappNumber: data.whatsappNumber ?? "" });
+      if (!created) return { ...this.defaultSettings, ...data };
+      return created;
     }
     return settingsRepository.update(data);
   }

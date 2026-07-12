@@ -1,66 +1,59 @@
-import { eq, ilike, desc, asc, count, sql } from "drizzle-orm";
-import { db } from "../../config/database.js";
-import { categories, products } from "../../database/schema/index.js";
+import { supabase } from "../../config/database.js";
 import type { CreateCategoryDto, UpdateCategoryDto } from "../../validators/category.validator.js";
 import type { PaginationDto } from "../../validators/pagination.validator.js";
 
 export class CategoryRepository {
   async findAll(pagination: PaginationDto, search?: string) {
     const { page, limit, sortBy, sortOrder } = pagination;
-    const offset = (page - 1) * limit;
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+    const ascending = sortOrder === "ASC";
+    const orderCol = sortBy === "display_order" ? "display_order" : "created_at";
 
-    const orderFn = sortOrder === "ASC" ? asc : desc;
-    const sortColumn = sortBy === "display_order" ? categories.displayOrder : categories.createdAt;
+    let query = supabase.from("categories").select("*", { count: "exact" });
+    if (search) query = query.ilike("name", `%${search}%`);
 
-    let whereClause = undefined;
-    if (search) {
-      whereClause = ilike(categories.name, `%${search}%`);
-    }
+    const { data, count, error } = await query
+      .order(orderCol, { ascending })
+      .range(from, to);
 
-    const [data, totalResult] = await Promise.all([
-      db
-        .select()
-        .from(categories)
-        .where(whereClause)
-        .orderBy(orderFn(sortColumn))
-        .limit(limit)
-        .offset(offset),
-      db.select({ value: count() }).from(categories).where(whereClause),
-    ]);
-
-    const total = totalResult[0]?.value ?? 0;
+    if (error) throw error;
 
     return {
-      data,
+      data: data ?? [],
       pagination: {
         page,
         limit,
-        total,
-        pages: Math.ceil(total / limit),
+        total: count ?? 0,
+        pages: Math.ceil((count ?? 0) / limit),
       },
     };
   }
 
   async findById(id: string) {
-    const result = await db.select().from(categories).where(eq(categories.id, id)).limit(1);
-    return result[0] ?? null;
+    const { data, error } = await supabase.from("categories").select("*").eq("id", id).single();
+    if (error && error.code !== "PGRST116") throw error;
+    return data ?? null;
   }
 
   async findByName(name: string) {
-    const result = await db
-      .select()
-      .from(categories)
-      .where(ilike(categories.name, name))
-      .limit(1);
-    return result[0] ?? null;
+    const { data, error } = await supabase
+      .from("categories")
+      .select("*")
+      .ilike("name", name)
+      .limit(1)
+      .single();
+    if (error && error.code !== "PGRST116") throw error;
+    return data ?? null;
   }
 
   async countProducts(categoryId: string) {
-    const result = await db
-      .select({ value: count() })
-      .from(products)
-      .where(eq(products.categoryId, categoryId));
-    return result[0]?.value ?? 0;
+    const { count, error } = await supabase
+      .from("products")
+      .select("*", { count: "exact", head: true })
+      .eq("category_id", categoryId);
+    if (error) throw error;
+    return count ?? 0;
   }
 
   async create(data: CreateCategoryDto) {
@@ -69,47 +62,54 @@ export class CategoryRepository {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "");
 
-    const result = await db
-      .insert(categories)
-      .values({ ...data, slug })
-      .returning();
-    return result[0];
+    const { data: result, error } = await supabase
+      .from("categories")
+      .insert({ name: data.name, description: data.description, display_order: data.displayOrder, slug })
+      .select()
+      .single();
+    if (error) throw error;
+    return result;
   }
 
   async update(id: string, data: UpdateCategoryDto) {
-    const updateData: Record<string, unknown> = { ...data, updatedAt: new Date() };
-
-    if (data.name) {
+    const updateData: Record<string, unknown> = { updated_at: new Date().toISOString() };
+    if (data.name !== undefined) {
+      updateData.name = data.name;
       updateData.slug = data.name
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-|-$/g, "");
     }
+    if (data.description !== undefined) updateData.description = data.description;
+    if (data.displayOrder !== undefined) updateData.display_order = data.displayOrder;
+    if (data.isActive !== undefined) updateData.is_active = data.isActive;
 
-    const result = await db
-      .update(categories)
-      .set(updateData)
-      .where(eq(categories.id, id))
-      .returning();
-    return result[0] ?? null;
+    const { data: result, error } = await supabase
+      .from("categories")
+      .update(updateData)
+      .eq("id", id)
+      .select()
+      .single();
+    if (error) throw error;
+    return result;
   }
 
   async delete(id: string) {
-    const result = await db.delete(categories).where(eq(categories.id, id)).returning();
-    return result[0] ?? null;
+    const { data, error } = await supabase.from("categories").delete().eq("id", id).select().single();
+    if (error) throw error;
+    return data;
   }
 
   async productCountByCategoryId(categoryId: string) {
-    const result = await db
-      .select({ value: count() })
-      .from(products)
-      .where(eq(products.categoryId, categoryId));
-    return result[0]?.value ?? 0;
+    return this.countProducts(categoryId);
   }
 
   async countAll() {
-    const result = await db.select({ value: count() }).from(categories);
-    return result[0]?.value ?? 0;
+    const { count, error } = await supabase
+      .from("categories")
+      .select("*", { count: "exact", head: true });
+    if (error) throw error;
+    return count ?? 0;
   }
 }
 

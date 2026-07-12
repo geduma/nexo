@@ -19,7 +19,17 @@ export function validate(schema: ZodSchema, source: "body" | "query" | "params" 
       return;
     }
 
-    req[source] = result.data;
+    if (source === "query") {
+      for (const [key, value] of Object.entries(result.data as Record<string, unknown>)) {
+        (req.query as Record<string, unknown>)[key] = value;
+      }
+    } else if (source === "params") {
+      for (const [key, value] of Object.entries(result.data as Record<string, unknown>)) {
+        (req.params as Record<string, unknown>)[key] = value;
+      }
+    } else {
+      req.body = result.data;
+    }
     next();
   };
 }

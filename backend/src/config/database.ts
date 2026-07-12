@@ -1,45 +1,32 @@
 import { env } from "./env.js";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
-import * as schema from "../database/schema/index.js";
 import { logger } from "./logger.js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
-let client: ReturnType<typeof postgres>;
+let supabase: SupabaseClient;
 let dbReady = false;
 
-const sqlConfig = {
-  max: env.NODE_ENV === "production" ? 10 : 5,
-  connect_timeout: 10,
-  onnotice: () => {},
-};
-
-if (env.NODE_ENV === "production") {
-  client = postgres(env.DATABASE_URL, sqlConfig);
+if (env.SUPABASE_URL && env.SUPABASE_PUBLISHABLE_KEY) {
+  supabase = createClient(env.SUPABASE_URL, env.SUPABASE_PUBLISHABLE_KEY, {
+    auth: { persistSession: false },
+  });
 } else {
-  const globalForPostgres = globalThis as unknown as { __postgresClient?: ReturnType<typeof postgres> };
-  if (!globalForPostgres.__postgresClient) {
-    globalForPostgres.__postgresClient = postgres(env.DATABASE_URL, sqlConfig);
-  }
-  client = globalForPostgres.__postgresClient;
+  logger.error("SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY are required in .env");
+  process.exit(1);
 }
 
-export const db = drizzle(client, { schema });
-export { client as sql };
+export { supabase };
 
 export async function checkDatabaseConnection(): Promise<boolean> {
   try {
-    await client`SELECT 1 as health`;
+    const { error } = await supabase.from("settings").select("id").limit(1);
+    if (error) throw error;
     dbReady = true;
-    logger.info("Database connection OK");
+    logger.info("Database connection OK (Supabase REST API)");
     return true;
   } catch (error) {
     dbReady = false;
     const err = error as Error;
-    logger.error("Database connection FAILED:", {
-      message: err.message,
-      code: (error as { code?: string }).code,
-    });
-    logger.error(`DATABASE_URL host: ${new URL(env.DATABASE_URL || "http://localhost").hostname}`);
+    logger.error("Database connection FAILED:", { message: err.message });
     return false;
   }
 }

@@ -1,31 +1,40 @@
-import { db } from "../../config/database.js";
-import { categories, settings } from "../schema/index.js";
+import { supabase } from "../../config/database.js";
 
 async function seed(): Promise<void> {
-  console.log("Seeding database...");
+  console.log("Seeding database via Supabase REST API...");
 
-  const existingCategory = await db.select().from(categories).limit(1);
-  if (existingCategory.length === 0) {
-    await db.insert(categories).values({
+  const { data: existingCategory } = await supabase
+    .from("categories")
+    .select("id")
+    .limit(1);
+
+  if (!existingCategory || existingCategory.length === 0) {
+    const { error } = await supabase.from("categories").insert({
       name: "General",
       slug: "general",
       description: "General product category",
-      displayOrder: 0,
-      isActive: true,
+      display_order: 0,
+      is_active: true,
     });
+    if (error) throw error;
     console.log("Created default category: General");
   }
 
-  const existingSettings = await db.select().from(settings).limit(1);
-  if (existingSettings.length === 0) {
-    await db.insert(settings).values({
-      businessName: "NEXO",
+  const { data: existingSettings } = await supabase
+    .from("settings")
+    .select("id")
+    .limit(1);
+
+  if (!existingSettings || existingSettings.length === 0) {
+    const { error } = await supabase.from("settings").insert({
+      business_name: "NEXO",
       currency: "COP",
-      currencySymbol: "$",
-      defaultLanguage: "es",
-      whatsappNumber: "",
+      currency_symbol: "$",
+      default_language: "es",
+      whatsapp_number: "",
       theme: "system",
     });
+    if (error) throw error;
     console.log("Created default settings");
   }
 

@@ -1,163 +1,198 @@
-import { eq, desc, asc, count, and, SQL, sql, ilike } from "drizzle-orm";
-import { db } from "../../config/database.js";
-import { manualSales, products } from "../../database/schema/index.js";
+import { supabase } from "../../config/database.js";
 import type { CreateSaleDto, UpdateSaleDto } from "../../validators/sale.validator.js";
 import type { SaleFilterDto } from "../../validators/pagination.validator.js";
 
 export class SaleRepository {
   async findAll(filters: SaleFilterDto) {
     const { page, limit, sortBy, sortOrder, dateFrom, dateTo, paymentMethod, productId, search } = filters;
-    const offset = (page - 1) * limit;
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+    const ascending = sortOrder === "ASC";
+    const orderCol = sortBy === "sale_date" ? "sale_date" : "created_at";
 
-    const orderFn = sortOrder === "ASC" ? asc : desc;
-    const sortColumn = sortBy === "sale_date" ? manualSales.saleDate : manualSales.createdAt;
+    let query = supabase
+      .from("manual_sales")
+      .select("*, products(name)", { count: "exact" });
 
-    const conditions: SQL[] = [];
-    if (dateFrom) conditions.push(sql`${manualSales.saleDate} >= ${new Date(dateFrom)}`);
-    if (dateTo) conditions.push(sql`${manualSales.saleDate} <= ${new Date(dateTo)}`);
-    if (paymentMethod) conditions.push(eq(manualSales.paymentMethod, paymentMethod));
-    if (productId) conditions.push(eq(manualSales.productId, productId));
-    if (search) conditions.push(ilike(manualSales.customerName, `%${search}%`));
+    if (dateFrom) query = query.gte("sale_date", dateFrom);
+    if (dateTo) query = query.lte("sale_date", dateTo + "T23:59:59");
+    if (paymentMethod) query = query.eq("payment_method", paymentMethod);
+    if (productId) query = query.eq("product_id", productId);
+    if (search) query = query.ilike("customer_name", `%${search}%`);
 
-    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+    const { data, count, error } = await query
+      .order(orderCol, { ascending })
+      .range(from, to);
 
-    const [data, totalResult] = await Promise.all([
-      db
-        .select({
-          id: manualSales.id,
-          productId: manualSales.productId,
-          customerName: manualSales.customerName,
-          customerContact: manualSales.customerContact,
-          quantity: manualSales.quantity,
-          salePrice: manualSales.salePrice,
-          paymentMethod: manualSales.paymentMethod,
-          notes: manualSales.notes,
-          saleDate: manualSales.saleDate,
-          createdAt: manualSales.createdAt,
-          updatedAt: manualSales.updatedAt,
-          productName: products.name,
-        })
-        .from(manualSales)
-        .leftJoin(products, eq(manualSales.productId, products.id))
-        .where(whereClause)
-        .orderBy(orderFn(sortColumn))
-        .limit(limit)
-        .offset(offset),
-      db.select({ value: count() }).from(manualSales).where(whereClause),
-    ]);
+    if (error) throw error;
 
-    const total = totalResult[0]?.value ?? 0;
+    const mapped = (data ?? []).map((s) => ({
+      id: s.id,
+      productId: s.product_id,
+      customerName: s.customer_name,
+      customerContact: s.customer_contact,
+      quantity: s.quantity,
+      salePrice: s.sale_price,
+      paymentMethod: s.payment_method,
+      notes: s.notes,
+      saleDate: s.sale_date,
+      createdAt: s.created_at,
+      updatedAt: s.updated_at,
+      productName: (s.products as { name: string }[] | null)?.[0]?.name ?? null,
+    }));
 
     return {
-      data,
+      data: mapped,
       pagination: {
         page,
         limit,
-        total,
-        pages: Math.ceil(total / limit),
+        total: count ?? 0,
+        pages: Math.ceil((count ?? 0) / limit),
       },
     };
   }
 
   async findById(id: string) {
-    const result = await db
-      .select({
-        id: manualSales.id,
-        productId: manualSales.productId,
-        customerName: manualSales.customerName,
-        customerContact: manualSales.customerContact,
-        quantity: manualSales.quantity,
-        salePrice: manualSales.salePrice,
-        paymentMethod: manualSales.paymentMethod,
-        notes: manualSales.notes,
-        saleDate: manualSales.saleDate,
-        createdAt: manualSales.createdAt,
-        updatedAt: manualSales.updatedAt,
-        productName: products.name,
-      })
-      .from(manualSales)
-      .leftJoin(products, eq(manualSales.productId, products.id))
-      .where(eq(manualSales.id, id))
-      .limit(1);
+    const { data, error } = await supabase
+      .from("manual_sales")
+      .select("*, products(name)")
+      .eq("id", id)
+      .single();
+    if (error && error.code !== "PGRST116") throw error;
+    if (!data) return null;
 
-    return result[0] ?? null;
+    return {
+      id: data.id,
+      productId: data.product_id,
+      customerName: data.customer_name,
+      customerContact: data.customer_contact,
+      quantity: data.quantity,
+      salePrice: data.sale_price,
+      paymentMethod: data.payment_method,
+      notes: data.notes,
+      saleDate: data.sale_date,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+      productName: (data.products as { name: string }[] | null)?.[0]?.name ?? null,
+    };
   }
 
   async create(data: CreateSaleDto) {
-    const result = await db.insert(manualSales).values({
-      ...data,
-      salePrice: data.salePrice.toString(),
-    }).returning();
-    return result[0];
+    const { data: result, error } = await supabase
+      .from("manual_sales")
+      .insert({
+        product_id: data.productId,
+        customer_name: data.customerName,
+        customer_contact: data.customerContact,
+        quantity: data.quantity ?? 1,
+        sale_price: data.salePrice.toString(),
+        payment_method: data.paymentMethod,
+        notes: data.notes,
+        sale_date: new Date().toISOString(),
+      })
+      .select()
+      .single();
+    if (error) throw error;
+    return result;
   }
 
   async update(id: string, data: UpdateSaleDto) {
-    const updateData: Record<string, unknown> = { ...data, updatedAt: new Date() };
-    if (data.salePrice !== undefined) updateData.salePrice = data.salePrice.toString();
-    const result = await db
-      .update(manualSales)
-      .set(updateData)
-      .where(eq(manualSales.id, id))
-      .returning();
-    return result[0] ?? null;
+    const updateData: Record<string, unknown> = { updated_at: new Date().toISOString() };
+    if (data.productId !== undefined) updateData.product_id = data.productId;
+    if (data.customerName !== undefined) updateData.customer_name = data.customerName;
+    if (data.customerContact !== undefined) updateData.customer_contact = data.customerContact;
+    if (data.quantity !== undefined) updateData.quantity = data.quantity;
+    if (data.salePrice !== undefined) updateData.sale_price = data.salePrice.toString();
+    if (data.paymentMethod !== undefined) updateData.payment_method = data.paymentMethod;
+    if (data.notes !== undefined) updateData.notes = data.notes;
+
+    const { data: result, error } = await supabase
+      .from("manual_sales")
+      .update(updateData)
+      .eq("id", id)
+      .select()
+      .single();
+    if (error) throw error;
+    return result;
   }
 
   async delete(id: string) {
-    const result = await db.delete(manualSales).where(eq(manualSales.id, id)).returning();
-    return result[0] ?? null;
+    const { data, error } = await supabase.from("manual_sales").delete().eq("id", id).select().single();
+    if (error) throw error;
+    return data;
   }
 
   async count() {
-    const result = await db.select({ value: count() }).from(manualSales);
-    return result[0]?.value ?? 0;
+    const { count, error } = await supabase
+      .from("manual_sales")
+      .select("*", { count: "exact", head: true });
+    if (error) throw error;
+    return count ?? 0;
   }
 
   async sumRevenue() {
-    const result = await db
-      .select({ value: sql<number>`COALESCE(SUM(CAST(${manualSales.salePrice} AS NUMERIC)), 0)` })
-      .from(manualSales);
-    return result[0]?.value ?? 0;
+    const { data, error } = await supabase.from("manual_sales").select("sale_price");
+    if (error) throw error;
+    return (data ?? []).reduce((sum, row) => sum + Number(row.sale_price), 0);
   }
 
   async averageSale() {
-    const result = await db
-      .select({ value: sql<number>`COALESCE(AVG(CAST(${manualSales.salePrice} AS NUMERIC)), 0)` })
-      .from(manualSales);
-    return result[0]?.value ?? 0;
+    const { data, error } = await supabase.from("manual_sales").select("sale_price");
+    if (error) throw error;
+    if (!data || data.length === 0) return 0;
+    return data.reduce((sum, row) => sum + Number(row.sale_price), 0) / data.length;
   }
 
   async topProducts(limit = 10) {
-    return db
-      .select({
-        productId: manualSales.productId,
-        productName: products.name,
-        totalQuantity: sql<number>`SUM(${manualSales.quantity})`,
-        totalRevenue: sql<number>`SUM(CAST(${manualSales.salePrice} AS NUMERIC))`,
-      })
-      .from(manualSales)
-      .innerJoin(products, eq(manualSales.productId, products.id))
-      .groupBy(manualSales.productId, products.name)
-      .orderBy(desc(sql`SUM(${manualSales.quantity})`))
-      .limit(limit);
+    const { data, error } = await supabase
+      .from("manual_sales")
+      .select("product_id, quantity, sale_price, products(name)")
+      .order("sale_date", { ascending: false });
+    if (error) throw error;
+
+    const grouped = new Map<string, { productId: string; productName: string; totalQuantity: number; totalRevenue: number }>();
+    for (const row of data ?? []) {
+      const pid = row.product_id;
+      const existing = grouped.get(pid);
+      if (existing) {
+        existing.totalQuantity += row.quantity;
+        existing.totalRevenue += Number(row.sale_price);
+      } else {
+        grouped.set(pid, {
+          productId: pid,
+          productName: (row.products as { name: string }[] | null)?.[0]?.name ?? "Unknown",
+          totalQuantity: row.quantity,
+          totalRevenue: Number(row.sale_price),
+        });
+      }
+    }
+
+    return Array.from(grouped.values())
+      .sort((a, b) => b.totalQuantity - a.totalQuantity)
+      .slice(0, limit);
   }
 
   async dailySales(dateFrom?: string, dateTo?: string) {
-    const conditions: SQL[] = [];
-    if (dateFrom) conditions.push(sql`${manualSales.saleDate} >= ${new Date(dateFrom)}`);
-    if (dateTo) conditions.push(sql`${manualSales.saleDate} <= ${new Date(dateTo)}`);
+    let query = supabase.from("manual_sales").select("sale_date, sale_price");
+    if (dateFrom) query = query.gte("sale_date", dateFrom);
+    if (dateTo) query = query.lte("sale_date", dateTo + "T23:59:59");
 
-    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+    const { data, error } = await query.order("sale_date", { ascending: false });
+    if (error) throw error;
 
-    return db
-      .select({
-        date: sql<string>`DATE(${manualSales.saleDate})`,
-        revenue: sql<number>`SUM(CAST(${manualSales.salePrice} AS NUMERIC))`,
-        count: count(),
-      })
-      .from(manualSales)
-      .where(whereClause)
-      .groupBy(sql`DATE(${manualSales.saleDate})`)
-      .orderBy(desc(sql`DATE(${manualSales.saleDate})`));
+    const grouped = new Map<string, { date: string; revenue: number; count: number }>();
+    for (const row of data ?? []) {
+      const date = row.sale_date?.substring(0, 10) ?? "unknown";
+      const existing = grouped.get(date);
+      if (existing) {
+        existing.revenue += Number(row.sale_price);
+        existing.count += 1;
+      } else {
+        grouped.set(date, { date, revenue: Number(row.sale_price), count: 1 });
+      }
+    }
+
+    return Array.from(grouped.values()).sort((a, b) => b.date.localeCompare(a.date));
   }
 }
 

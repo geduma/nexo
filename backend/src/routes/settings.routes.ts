@@ -6,7 +6,7 @@ import { updateSettingsSchema } from "../validators/settings.validator.js";
 
 const router = Router();
 
-router.get("/", authenticate, (req, res) => settingsController.get(req, res));
+router.get("/", (req, res) => settingsController.get(req, res));
 router.put("/", authenticate, validate(updateSettingsSchema), (req, res) => settingsController.update(req, res));
 
 export { router as settingsRoutes };

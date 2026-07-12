@@ -9,7 +9,7 @@ const start = async (): Promise<void> => {
 
   if (!dbOk) {
     logger.warn("WARNING: Database is not connected. API will return 503 for DB routes.");
-    logger.warn("Fix DATABASE_URL in backend/.env and restart.");
+    logger.warn("Fix SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY in backend/.env and restart.");
   }
 
   try {
