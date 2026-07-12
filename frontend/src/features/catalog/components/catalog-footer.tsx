@@ -8,7 +8,7 @@ export function CatalogFooter({ businessName }: CatalogFooterProps) {
   return (
     <Box py="lg" ta="center">
       <Text size="xs" c="dimmed">
-        &copy; {new Date().getFullYear()} {businessName}. Powered by NEXO
+        &copy; {new Date().getFullYear()} {businessName}. Powered by NEXO · geduma
       </Text>
     </Box>
   );
