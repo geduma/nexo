@@ -1,0 +1,157 @@
+{
+  "app": {
+    "name": "NEXO"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search...",
+    "loading": "Loading...",
+    "noData": "No data",
+    "confirm": "Confirm",
+    "confirmDelete": "Are you sure you want to delete this record?",
+    "success": "Operation successful",
+    "error": "Error performing operation",
+    "actions": "Actions",
+    "back": "Back",
+    "retry": "Retry",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "auth": {
+    "login": "Sign In",
+    "email": "Email",
+    "password": "Password",
+    "loginButton": "Sign In",
+    "invalidCredentials": "Invalid credentials",
+    "logout": "Sign Out"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "products": "Products",
+    "categories": "Categories",
+    "sales": "Sales",
+    "reports": "Reports",
+    "settings": "Settings",
+    "social": "Social Generator"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "totalProducts": "Total Products",
+    "visibleProducts": "Visible Products",
+    "featuredProducts": "Featured Products",
+    "categories": "Categories",
+    "revenue": "Revenue",
+    "totalSales": "Total Sales",
+    "recentSales": "Recent Sales",
+    "topProducts": "Top Products",
+    "quickActions": "Quick Actions",
+    "newProduct": "New Product",
+    "registerSale": "Register Sale",
+    "generatePost": "Generate Post"
+  },
+  "products": {
+    "title": "Products",
+    "create": "New Product",
+    "edit": "Edit Product",
+    "name": "Name",
+    "description": "Description",
+    "category": "Category",
+    "priceCost": "Cost Price",
+    "priceSale": "Sale Price",
+    "availability": "Availability",
+    "visible": "Visible",
+    "featured": "Featured",
+    "supplierInfo": "Supplier Info",
+    "images": "Images",
+    "noProducts": "No products",
+    "noProductsDescription": "Create your first product to start selling"
+  },
+  "categories": {
+    "title": "Categories",
+    "create": "New Category",
+    "edit": "Edit Category",
+    "name": "Name",
+    "description": "Description",
+    "displayOrder": "Order",
+    "active": "Active",
+    "productCount": "Products",
+    "noCategories": "No categories",
+    "noCategoriesDescription": "Create your first category to organize your products",
+    "cannotDelete": "Cannot delete a category with products"
+  },
+  "sales": {
+    "title": "Sales",
+    "register": "Register Sale",
+    "edit": "Edit Sale",
+    "product": "Product",
+    "customerName": "Customer Name",
+    "customerContact": "Contact",
+    "quantity": "Quantity",
+    "salePrice": "Sale Price",
+    "paymentMethod": "Payment Method",
+    "notes": "Notes",
+    "saleDate": "Sale Date",
+    "noSales": "No sales recorded",
+    "noSalesDescription": "Register your first sale to start tracking your revenue"
+  },
+  "reports": {
+    "title": "Reports",
+    "revenue": "Revenue",
+    "salesCount": "Sales Count",
+    "averageTicket": "Average Ticket",
+    "productsSold": "Products Sold",
+    "revenueByDay": "Revenue by Day",
+    "topProducts": "Top Products",
+    "salesTrend": "Sales Trend",
+    "dateRange": "Date Range"
+  },
+  "settings": {
+    "title": "Settings",
+    "businessName": "Business Name",
+    "logo": "Logo",
+    "currency": "Currency",
+    "currencySymbol": "Currency Symbol",
+    "language": "Language",
+    "theme": "Theme",
+    "whatsappNumber": "WhatsApp Number",
+    "restoreDefaults": "Restore Defaults"
+  },
+  "catalog": {
+    "title": "Catalog",
+    "search": "Search products...",
+    "featured": "Featured",
+    "allProducts": "All products",
+    "whatsappButton": "Contact via WhatsApp",
+    "relatedProducts": "Related Products",
+    "noProducts": "No products found",
+    "backToCatalog": "Back to Catalog"
+  },
+  "availability": {
+    "IN_STOCK": "Available",
+    "CHECK_SUPPLIER": "Check Availability"
+  },
+  "emptyStates": {
+    "noProducts": {
+      "title": "No products",
+      "description": "Create your first product to start selling"
+    },
+    "noCategories": {
+      "title": "No categories",
+      "description": "Create your first category to organize your products"
+    },
+    "noSales": {
+      "title": "No sales",
+      "description": "Register your first sale to start tracking your revenue"
+    }
+  },
+  "errors": {
+    "notFound": "Page not found",
+    "unauthorized": "Unauthorized",
+    "serverError": "Server error",
+    "networkError": "Network error"
+  }
+}

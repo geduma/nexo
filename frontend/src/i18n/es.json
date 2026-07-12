@@ -1,0 +1,157 @@
+{
+  "app": {
+    "name": "NEXO"
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "search": "Buscar...",
+    "loading": "Cargando...",
+    "noData": "No hay datos",
+    "confirm": "Confirmar",
+    "confirmDelete": "¿Estás seguro de que deseas eliminar este registro?",
+    "success": "Operación exitosa",
+    "error": "Error al realizar la operación",
+    "actions": "Acciones",
+    "back": "Volver",
+    "retry": "Reintentar",
+    "yes": "Sí",
+    "no": "No"
+  },
+  "auth": {
+    "login": "Iniciar Sesión",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "loginButton": "Entrar",
+    "invalidCredentials": "Credenciales inválidas",
+    "logout": "Cerrar Sesión"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "products": "Productos",
+    "categories": "Categorías",
+    "sales": "Ventas",
+    "reports": "Reportes",
+    "settings": "Configuración",
+    "social": "Generador Social"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "totalProducts": "Total Productos",
+    "visibleProducts": "Productos Visibles",
+    "featuredProducts": "Productos Destacados",
+    "categories": "Categorías",
+    "revenue": "Ingresos",
+    "totalSales": "Total Ventas",
+    "recentSales": "Últimas Ventas",
+    "topProducts": "Top Productos",
+    "quickActions": "Acciones Rápidas",
+    "newProduct": "Nuevo Producto",
+    "registerSale": "Registrar Venta",
+    "generatePost": "Generar Post"
+  },
+  "products": {
+    "title": "Productos",
+    "create": "Nuevo Producto",
+    "edit": "Editar Producto",
+    "name": "Nombre",
+    "description": "Descripción",
+    "category": "Categoría",
+    "priceCost": "Precio Costo",
+    "priceSale": "Precio Venta",
+    "availability": "Disponibilidad",
+    "visible": "Visible",
+    "featured": "Destacado",
+    "supplierInfo": "Info Proveedor",
+    "images": "Imágenes",
+    "noProducts": "No hay productos",
+    "noProductsDescription": "Crea tu primer producto para comenzar a vender"
+  },
+  "categories": {
+    "title": "Categorías",
+    "create": "Nueva Categoría",
+    "edit": "Editar Categoría",
+    "name": "Nombre",
+    "description": "Descripción",
+    "displayOrder": "Orden",
+    "active": "Activa",
+    "productCount": "Productos",
+    "noCategories": "No hay categorías",
+    "noCategoriesDescription": "Crea tu primera categoría para organizar tus productos",
+    "cannotDelete": "No se puede eliminar una categoría con productos"
+  },
+  "sales": {
+    "title": "Ventas",
+    "register": "Registrar Venta",
+    "edit": "Editar Venta",
+    "product": "Producto",
+    "customerName": "Nombre del Cliente",
+    "customerContact": "Contacto",
+    "quantity": "Cantidad",
+    "salePrice": "Precio de Venta",
+    "paymentMethod": "Método de Pago",
+    "notes": "Notas",
+    "saleDate": "Fecha de Venta",
+    "noSales": "No hay ventas registradas",
+    "noSalesDescription": "Registra tu primera venta para comenzar a rastrear tus ingresos"
+  },
+  "reports": {
+    "title": "Reportes",
+    "revenue": "Ingresos",
+    "salesCount": "Número de Ventas",
+    "averageTicket": "Ticket Promedio",
+    "productsSold": "Productos Vendidos",
+    "revenueByDay": "Ingresos por Día",
+    "topProducts": "Top Productos",
+    "salesTrend": "Tendencia de Ventas",
+    "dateRange": "Rango de Fechas"
+  },
+  "settings": {
+    "title": "Configuración",
+    "businessName": "Nombre del Negocio",
+    "logo": "Logo",
+    "currency": "Moneda",
+    "currencySymbol": "Símbolo de Moneda",
+    "language": "Idioma",
+    "theme": "Tema",
+    "whatsappNumber": "Número de WhatsApp",
+    "restoreDefaults": "Restaurar Valores por Defecto"
+  },
+  "catalog": {
+    "title": "Catálogo",
+    "search": "Buscar productos...",
+    "featured": "Destacados",
+    "allProducts": "Todos los productos",
+    "whatsappButton": "Consultar por WhatsApp",
+    "relatedProducts": "Productos Relacionados",
+    "noProducts": "No se encontraron productos",
+    "backToCatalog": "Volver al Catálogo"
+  },
+  "availability": {
+    "IN_STOCK": "Disponible",
+    "CHECK_SUPPLIER": "Consultar"
+  },
+  "emptyStates": {
+    "noProducts": {
+      "title": "No hay productos",
+      "description": "Crea tu primer producto para comenzar a vender"
+    },
+    "noCategories": {
+      "title": "No hay categorías",
+      "description": "Crea tu primera categoría para organizar tus productos"
+    },
+    "noSales": {
+      "title": "No hay ventas",
+      "description": "Registra tu primera venta para comenzar a rastrear tus ingresos"
+    }
+  },
+  "errors": {
+    "notFound": "Página no encontrada",
+    "unauthorized": "No autorizado",
+    "serverError": "Error del servidor",
+    "networkError": "Error de red"
+  }
+}

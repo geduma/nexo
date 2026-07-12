@@ -1,0 +1,94 @@
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  Stack,
+  Title,
+  TextInput,
+  Select,
+  Button,
+  Group,
+} from "@mantine/core";
+import { useTranslation } from "react-i18next";
+import { useState } from "react";
+import { useSale, useUpdateSale } from "../hooks/use-sales";
+import { LoadingSkeleton } from "../../../components/common/loading-skeleton";
+import { ErrorState } from "../../../components/common/error-state";
+
+export function SaleEditPage() {
+  const { id } = useParams<{ id: string }>();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { data: sale, isLoading, error, refetch } = useSale(id!);
+  const updateMutation = useUpdateSale();
+
+  const [customerName, setCustomerName] = useState("");
+  const [customerContact, setCustomerContact] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<string | null>(null);
+  const [notes, setNotes] = useState("");
+
+  if (isLoading) return <LoadingSkeleton />;
+  if (error || !sale?.data) return <ErrorState onRetry={refetch} />;
+
+  const s = sale.data;
+
+  const handleSubmit = () => {
+    updateMutation.mutate(
+      {
+        id: id!,
+        data: {
+          customerName: customerName !== "" ? customerName : s.customerName,
+          customerContact: customerContact !== "" ? customerContact : (s.customerContact ?? undefined),
+          paymentMethod: paymentMethod ?? (s.paymentMethod ?? undefined),
+          notes: notes !== "" ? notes : (s.notes ?? undefined),
+        },
+      },
+      { onSuccess: () => navigate("/sales") }
+    );
+  };
+
+  return (
+    <Stack gap="lg" maw={500}>
+      <Title order={2}>{t("sales.edit")}</Title>
+
+      <TextInput
+        label={t("sales.customerName")}
+        value={customerName !== "" ? customerName : s.customerName}
+        onChange={(e) => setCustomerName(e.currentTarget.value)}
+        required
+      />
+
+      <TextInput
+        label={t("sales.customerContact")}
+        value={customerContact !== "" ? customerContact : (s.customerContact ?? "")}
+        onChange={(e) => setCustomerContact(e.currentTarget.value)}
+      />
+
+      <Select
+        label={t("sales.paymentMethod")}
+        value={paymentMethod ?? (s.paymentMethod ?? null)}
+        onChange={setPaymentMethod}
+        data={[
+          { value: "Cash", label: "Efectivo" },
+          { value: "Transfer", label: "Transferencia" },
+          { value: "Nequi", label: "Nequi" },
+          { value: "Daviplata", label: "Daviplata" },
+          { value: "Credit Card", label: "Tarjeta de Credito" },
+        ]}
+      />
+
+      <TextInput
+        label={t("sales.notes")}
+        value={notes !== "" ? notes : (s.notes ?? "")}
+        onChange={(e) => setNotes(e.currentTarget.value)}
+      />
+
+      <Group justify="flex-end">
+        <Button variant="subtle" onClick={() => navigate("/sales")}>
+          {t("common.cancel")}
+        </Button>
+        <Button onClick={handleSubmit} loading={updateMutation.isPending}>
+          {t("common.save")}
+        </Button>
+      </Group>
+    </Stack>
+  );
+}
