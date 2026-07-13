@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Stack, Title, TextInput, Textarea, NumberInput, Select, Button, Group } from "@mantine/core";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -21,7 +21,7 @@ export function SaleCreatePage() {
     },
   });
 
-  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<SaleForm>({
+  const { handleSubmit, control, formState: { errors } } = useForm<SaleForm>({
     resolver: zodResolver(saleSchema),
     defaultValues: { quantity: 1, salePrice: 0 },
   });
@@ -32,6 +32,12 @@ export function SaleCreatePage() {
       queryClient.invalidateQueries({ queryKey: ["sales"] });
       notifications.show({ message: t("common.success"), color: "green" });
       navigate("/sales");
+    },
+    onError: (error: { response?: { data?: { message?: string } } }) => {
+      notifications.show({
+        message: error.response?.data?.message ?? t("common.error"),
+        color: "red",
+      });
     },
   });
 
@@ -46,61 +52,110 @@ export function SaleCreatePage() {
 
       <form onSubmit={handleSubmit((data) => createMutation.mutate(data))}>
         <Stack gap="md">
-          <Select
-            label={t("sales.product")}
-            data={productOptions}
-            value={watch("productId")}
-            onChange={(v) => v && setValue("productId", v)}
-            error={errors.productId?.message}
-            searchable
-            required
+          <Controller
+            name="productId"
+            control={control}
+            render={({ field }) => (
+              <Select
+                label={t("sales.product")}
+                data={productOptions}
+                {...field}
+                value={field.value ?? null}
+                error={errors.productId?.message}
+                searchable
+                required
+              />
+            )}
           />
 
-          <TextInput
-            label={t("sales.customerName")}
-            {...register("customerName")}
-            error={errors.customerName?.message}
-            required
+          <Controller
+            name="customerName"
+            control={control}
+            render={({ field }) => (
+              <TextInput
+                label={t("sales.customerName")}
+                {...field}
+                value={field.value ?? ""}
+                error={errors.customerName?.message}
+                required
+              />
+            )}
           />
 
-          <TextInput
-            label={t("sales.customerContact")}
-            {...register("customerContact")}
+          <Controller
+            name="customerContact"
+            control={control}
+            render={({ field }) => (
+              <TextInput
+                label={t("sales.customerContact")}
+                {...field}
+                value={field.value ?? ""}
+              />
+            )}
           />
 
-          <NumberInput
-            label={t("sales.quantity")}
-            value={watch("quantity")}
-            onChange={(val) => setValue("quantity", Number(val ?? 1))}
-            min={1}
-            required
+          <Controller
+            name="quantity"
+            control={control}
+            render={({ field }) => (
+              <NumberInput
+                {...field}
+                label={t("sales.quantity")}
+                value={field.value}
+                onChange={(val) => field.onChange(Number(val ?? 1))}
+                error={errors.quantity?.message}
+                min={1}
+                required
+              />
+            )}
           />
 
-          <NumberInput
-            label={t("sales.salePrice")}
-            value={watch("salePrice")}
-            onChange={(val) => setValue("salePrice", Number(val ?? 0))}
-            min={0.01}
-            prefix="$"
-            required
+          <Controller
+            name="salePrice"
+            control={control}
+            render={({ field }) => (
+              <NumberInput
+                {...field}
+                label={t("sales.salePrice")}
+                value={field.value}
+                onChange={(val) => field.onChange(Number(val ?? 0))}
+                error={errors.salePrice?.message}
+                min={0.01}
+                prefix="$"
+                required
+              />
+            )}
           />
 
-          <Select
-            label={t("sales.paymentMethod")}
-            value={watch("paymentMethod")}
-            onChange={(v) => v && setValue("paymentMethod", v)}
-            data={[
-              { value: "Cash", label: "Efectivo" },
-              { value: "Transfer", label: "Transferencia" },
-              { value: "Nequi", label: "Nequi" },
-              { value: "Daviplata", label: "Daviplata" },
-              { value: "Credit Card", label: "Tarjeta de Credito" },
-            ]}
+          <Controller
+            name="paymentMethod"
+            control={control}
+            render={({ field }) => (
+              <Select
+                label={t("sales.paymentMethod")}
+                {...field}
+                value={field.value ?? null}
+                data={[
+                  { value: "Cash", label: t("sales.paymentMethods.Cash") },
+                  { value: "Transfer", label: t("sales.paymentMethods.Transfer") },
+                  { value: "Nequi", label: t("sales.paymentMethods.Nequi") },
+                  { value: "Daviplata", label: t("sales.paymentMethods.Daviplata") },
+                  { value: "Credit Card", label: t("sales.paymentMethods.Credit Card") },
+                ]}
+              />
+            )}
           />
 
-          <Textarea
-            label={t("sales.notes")}
-            {...register("notes")}
+          <Controller
+            name="notes"
+            control={control}
+            render={({ field }) => (
+              <Textarea
+                label={t("sales.notes")}
+                {...field}
+                value={field.value ?? ""}
+              />
+            )}
           />
 
           <Group justify="flex-end">

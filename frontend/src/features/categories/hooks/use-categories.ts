@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { notifications } from "@mantine/notifications";
+import { useTranslation } from "react-i18next";
 import { apiClient } from "../../../services/api/client";
 import type { Category } from "../../../types";
 import type { PaginatedResponse } from "../../../types";
@@ -41,6 +42,7 @@ export function useCategory(id: string) {
 
 export function useCreateCategory() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   return useMutation({
     mutationFn: async (data: { name: string; description?: string; displayOrder: number; isActive: boolean }) => {
@@ -48,13 +50,20 @@ export function useCreateCategory() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
-      notifications.show({ message: "Categoría creada", color: "green" });
+      notifications.show({ message: t("categories.created"), color: "green" });
+    },
+    onError: (error: { response?: { data?: { message?: string } } }) => {
+      notifications.show({
+        message: error.response?.data?.message ?? t("categories.createError"),
+        color: "red",
+      });
     },
   });
 }
 
 export function useUpdateCategory() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<Category> }) => {
@@ -62,13 +71,20 @@ export function useUpdateCategory() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
-      notifications.show({ message: "Categoría actualizada", color: "green" });
+      notifications.show({ message: t("categories.updated"), color: "green" });
+    },
+    onError: (error: { response?: { data?: { message?: string } } }) => {
+      notifications.show({
+        message: error.response?.data?.message ?? t("categories.updateError"),
+        color: "red",
+      });
     },
   });
 }
 
 export function useDeleteCategory() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   return useMutation({
     mutationFn: async (id: string) => {
@@ -76,7 +92,13 @@ export function useDeleteCategory() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
-      notifications.show({ message: "Categoría eliminada", color: "green" });
+      notifications.show({ message: t("categories.deleted"), color: "green" });
+    },
+    onError: (error: { response?: { data?: { message?: string } } }) => {
+      notifications.show({
+        message: error.response?.data?.message ?? t("categories.deleteError"),
+        color: "red",
+      });
     },
   });
 }

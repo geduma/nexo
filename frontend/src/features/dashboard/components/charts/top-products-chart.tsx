@@ -1,17 +1,20 @@
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import { Paper, Title } from "@mantine/core";
+import { useTranslation } from "react-i18next";
 
 interface TopProductsChartProps {
   data: Array<{ productName: string; totalQuantity: number; totalRevenue: number }>;
 }
 
 export function TopProductsChart({ data }: TopProductsChartProps) {
+  const { t } = useTranslation();
+
   return (
     <Paper p="md" radius="md" withBorder>
-      <Title order={4} mb="md">Top Productos</Title>
+      <Title order={4} mb="md">{t("reports.topProducts")}</Title>
       {data.length === 0 ? (
         <p style={{ textAlign: "center", color: "var(--mantine-color-dimmed)" }}>
-          No hay datos
+          {t("reports.noData")}
         </p>
       ) : (
         <ResponsiveContainer width="100%" height={300}>

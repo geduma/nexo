@@ -56,6 +56,7 @@ export function SettingsPage() {
             label={t("settings.language")}
             value={watch("defaultLanguage")}
             onChange={(v) => v && setValue("defaultLanguage", v as "es" | "en")}
+            error={errors.defaultLanguage?.message}
             data={[
               { value: "es", label: "Español" },
               { value: "en", label: "English" },
@@ -66,6 +67,7 @@ export function SettingsPage() {
             label={t("settings.theme")}
             value={watch("theme")}
             onChange={(v) => v && setValue("theme", v as "light" | "dark" | "system")}
+            error={errors.theme?.message}
             data={[
               { value: "light", label: "Light" },
               { value: "dark", label: "Dark" },

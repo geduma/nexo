@@ -4,6 +4,7 @@ import {
   Title,
   Group,
   Button,
+  Table,
   ActionIcon,
   Badge,
 } from "@mantine/core";
@@ -56,27 +57,27 @@ export function CategoryListPage() {
           description={t("categories.noCategoriesDescription")}
         />
       ) : (
-        <table style={{ width: "100%" }}>
-          <thead>
-            <tr>
-              <th>{t("categories.name")}</th>
-              <th>{t("categories.displayOrder")}</th>
-              <th>{t("categories.active")}</th>
-              <th>{t("common.actions")}</th>
-            </tr>
-          </thead>
-          <tbody>
+        <Table striped highlightOnHover>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th style={{ width: "40%" }}>{t("categories.name")}</Table.Th>
+              <Table.Th style={{ width: "20%" }}>{t("categories.displayOrder")}</Table.Th>
+              <Table.Th style={{ width: "20%" }}>{t("categories.active")}</Table.Th>
+              <Table.Th style={{ width: "20%", textAlign: "right" }}>{t("common.actions")}</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
             {categories.map((category) => (
-              <tr key={category.id}>
-                <td>{category.name}</td>
-                <td>{category.displayOrder}</td>
-                <td>
+              <Table.Tr key={category.id}>
+                <Table.Td style={{ fontWeight: 500 }}>{category.name}</Table.Td>
+                <Table.Td>{category.displayOrder}</Table.Td>
+                <Table.Td>
                   <Badge color={category.isActive ? "green" : "gray"}>
                     {category.isActive ? t("common.yes") : t("common.no")}
                   </Badge>
-                </td>
-                <td>
-                  <Group gap="xs">
+                </Table.Td>
+                <Table.Td>
+                  <Group gap="xs" justify="flex-end">
                     <ActionIcon variant="subtle" onClick={() => navigate(`/categories/${category.id}/edit`)}>
                       <Edit size={16} />
                     </ActionIcon>
@@ -84,11 +85,11 @@ export function CategoryListPage() {
                       <Trash size={16} />
                     </ActionIcon>
                   </Group>
-                </td>
-              </tr>
+                </Table.Td>
+              </Table.Tr>
             ))}
-          </tbody>
-        </table>
+          </Table.Tbody>
+        </Table>
       )}
 
       <ConfirmDialog

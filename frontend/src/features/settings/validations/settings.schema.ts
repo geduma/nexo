@@ -1,11 +1,12 @@
 import { z } from "zod";
+import i18n from "i18next";
 
 export const settingsSchema = z.object({
-  businessName: z.string().min(1, "Nombre del negocio es requerido"),
-  currency: z.string().min(1, "Moneda es requerida"),
-  currencySymbol: z.string().min(1, "Símbolo es requerido"),
+  businessName: z.string().min(1, i18n.t("validation.required")),
+  currency: z.string().min(1, i18n.t("validation.required")),
+  currencySymbol: z.string().min(1, i18n.t("validation.required")),
   defaultLanguage: z.enum(["es", "en"]),
-  whatsappNumber: z.string().min(1, "Número de WhatsApp es requerido"),
+  whatsappNumber: z.string().min(1, i18n.t("validation.required")),
   theme: z.enum(["light", "dark", "system"]),
 });
 

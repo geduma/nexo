@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { notifications } from "@mantine/notifications";
+import { useTranslation } from "react-i18next";
 import { apiClient } from "../../../services/api/client";
 import type { ManualSale, PaginatedResponse } from "../../../types";
 
@@ -40,6 +41,7 @@ export function useSale(id: string) {
 
 export function useCreateSale() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   return useMutation({
     mutationFn: async (data: {
@@ -55,13 +57,20 @@ export function useCreateSale() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sales"] });
-      notifications.show({ message: "Venta registrada", color: "green" });
+      notifications.show({ message: t("sales.created"), color: "green" });
+    },
+    onError: (error: { response?: { data?: { message?: string } } }) => {
+      notifications.show({
+        message: error.response?.data?.message ?? t("sales.createError"),
+        color: "red",
+      });
     },
   });
 }
 
 export function useUpdateSale() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<ManualSale> }) => {
@@ -69,13 +78,20 @@ export function useUpdateSale() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sales"] });
-      notifications.show({ message: "Venta actualizada", color: "green" });
+      notifications.show({ message: t("sales.updated"), color: "green" });
+    },
+    onError: (error: { response?: { data?: { message?: string } } }) => {
+      notifications.show({
+        message: error.response?.data?.message ?? t("sales.updateError"),
+        color: "red",
+      });
     },
   });
 }
 
 export function useDeleteSale() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   return useMutation({
     mutationFn: async (id: string) => {
@@ -83,7 +99,13 @@ export function useDeleteSale() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sales"] });
-      notifications.show({ message: "Venta eliminada", color: "green" });
+      notifications.show({ message: t("sales.deleted"), color: "green" });
+    },
+    onError: (error: { response?: { data?: { message?: string } } }) => {
+      notifications.show({
+        message: error.response?.data?.message ?? t("sales.deleteError"),
+        color: "red",
+      });
     },
   });
 }

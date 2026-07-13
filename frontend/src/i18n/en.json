@@ -68,7 +68,13 @@
     "supplierInfo": "Supplier Info",
     "images": "Images",
     "noProducts": "No products",
-    "noProductsDescription": "Create your first product to start selling"
+    "noProductsDescription": "Create your first product to start selling",
+    "created": "Product created",
+    "createError": "Error creating product",
+    "updated": "Product updated",
+    "updateError": "Error updating product",
+    "deleted": "Product deleted",
+    "deleteError": "Error deleting product"
   },
   "categories": {
     "title": "Categories",
@@ -81,7 +87,13 @@
     "productCount": "Products",
     "noCategories": "No categories",
     "noCategoriesDescription": "Create your first category to organize your products",
-    "cannotDelete": "Cannot delete a category with products"
+    "cannotDelete": "Cannot delete a category with products",
+    "created": "Category created",
+    "createError": "Error creating category",
+    "updated": "Category updated",
+    "updateError": "Error updating category",
+    "deleted": "Category deleted",
+    "deleteError": "Error deleting category"
   },
   "sales": {
     "title": "Sales",
@@ -93,10 +105,23 @@
     "quantity": "Quantity",
     "salePrice": "Sale Price",
     "paymentMethod": "Payment Method",
+    "paymentMethods": {
+      "Cash": "Cash",
+      "Transfer": "Bank Transfer",
+      "Nequi": "Nequi",
+      "Daviplata": "Daviplata",
+      "Credit Card": "Credit Card"
+    },
     "notes": "Notes",
     "saleDate": "Sale Date",
     "noSales": "No sales recorded",
-    "noSalesDescription": "Register your first sale to start tracking your revenue"
+    "noSalesDescription": "Register your first sale to start tracking your revenue",
+    "created": "Sale registered",
+    "createError": "Error registering sale",
+    "updated": "Sale updated",
+    "updateError": "Error updating sale",
+    "deleted": "Sale deleted",
+    "deleteError": "Error deleting sale"
   },
   "reports": {
     "title": "Reports",
@@ -107,7 +132,10 @@
     "revenueByDay": "Revenue by Day",
     "topProducts": "Top Products",
     "salesTrend": "Sales Trend",
-    "dateRange": "Date Range"
+    "dateRange": "Date Range",
+    "dateFrom": "From",
+    "dateTo": "To",
+    "noData": "No data"
   },
   "settings": {
     "title": "Settings",
@@ -153,5 +181,15 @@
     "unauthorized": "Unauthorized",
     "serverError": "Server error",
     "networkError": "Network error"
+  },
+  "validation": {
+    "required": "This field is required",
+    "maxLength": "Maximum {{max}} characters",
+    "minValue": "Minimum value is {{min}}",
+    "mustBeInteger": "Must be a whole number",
+    "priceMustBePositive": "Must be greater than 0",
+    "minQuantity": "Minimum 1 unit",
+    "selectCategory": "Select a category",
+    "selectProduct": "Select a product"
   }
 }

@@ -35,14 +35,14 @@ export function ReportsPage() {
           <SimpleGrid cols={{ base: 1, sm: 2 }}>
             <TextInput
               type="date"
-              label="Desde"
+              label={t("reports.dateFrom")}
               value={dateFrom}
               onChange={(e) => setDateFrom(e.currentTarget.value)}
               aria-label="Date from"
             />
             <TextInput
               type="date"
-              label="Hasta"
+              label={t("reports.dateTo")}
               value={dateTo}
               onChange={(e) => setDateTo(e.currentTarget.value)}
               aria-label="Date to"

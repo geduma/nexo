@@ -67,11 +67,11 @@ export function SaleEditPage() {
         value={paymentMethod ?? (s.paymentMethod ?? null)}
         onChange={setPaymentMethod}
         data={[
-          { value: "Cash", label: "Efectivo" },
-          { value: "Transfer", label: "Transferencia" },
-          { value: "Nequi", label: "Nequi" },
-          { value: "Daviplata", label: "Daviplata" },
-          { value: "Credit Card", label: "Tarjeta de Credito" },
+          { value: "Cash", label: t("sales.paymentMethods.Cash") },
+          { value: "Transfer", label: t("sales.paymentMethods.Transfer") },
+          { value: "Nequi", label: t("sales.paymentMethods.Nequi") },
+          { value: "Daviplata", label: t("sales.paymentMethods.Daviplata") },
+          { value: "Credit Card", label: t("sales.paymentMethods.Credit Card") },
         ]}
       />
 

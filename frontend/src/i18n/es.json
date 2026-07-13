@@ -68,7 +68,13 @@
     "supplierInfo": "Info Proveedor",
     "images": "Imágenes",
     "noProducts": "No hay productos",
-    "noProductsDescription": "Crea tu primer producto para comenzar a vender"
+    "noProductsDescription": "Crea tu primer producto para comenzar a vender",
+    "created": "Producto creado",
+    "createError": "Error al crear producto",
+    "updated": "Producto actualizado",
+    "updateError": "Error al actualizar producto",
+    "deleted": "Producto eliminado",
+    "deleteError": "Error al eliminar producto"
   },
   "categories": {
     "title": "Categorías",
@@ -81,7 +87,13 @@
     "productCount": "Productos",
     "noCategories": "No hay categorías",
     "noCategoriesDescription": "Crea tu primera categoría para organizar tus productos",
-    "cannotDelete": "No se puede eliminar una categoría con productos"
+    "cannotDelete": "No se puede eliminar una categoría con productos",
+    "created": "Categoría creada",
+    "createError": "Error al crear categoría",
+    "updated": "Categoría actualizada",
+    "updateError": "Error al actualizar categoría",
+    "deleted": "Categoría eliminada",
+    "deleteError": "Error al eliminar categoría"
   },
   "sales": {
     "title": "Ventas",
@@ -93,10 +105,23 @@
     "quantity": "Cantidad",
     "salePrice": "Precio de Venta",
     "paymentMethod": "Método de Pago",
+    "paymentMethods": {
+      "Cash": "Efectivo",
+      "Transfer": "Transferencia",
+      "Nequi": "Nequi",
+      "Daviplata": "Daviplata",
+      "Credit Card": "Tarjeta de Crédito"
+    },
     "notes": "Notas",
     "saleDate": "Fecha de Venta",
     "noSales": "No hay ventas registradas",
-    "noSalesDescription": "Registra tu primera venta para comenzar a rastrear tus ingresos"
+    "noSalesDescription": "Registra tu primera venta para comenzar a rastrear tus ingresos",
+    "created": "Venta registrada",
+    "createError": "Error al registrar venta",
+    "updated": "Venta actualizada",
+    "updateError": "Error al actualizar venta",
+    "deleted": "Venta eliminada",
+    "deleteError": "Error al eliminar venta"
   },
   "reports": {
     "title": "Reportes",
@@ -107,7 +132,10 @@
     "revenueByDay": "Ingresos por Día",
     "topProducts": "Top Productos",
     "salesTrend": "Tendencia de Ventas",
-    "dateRange": "Rango de Fechas"
+    "dateRange": "Rango de Fechas",
+    "dateFrom": "Desde",
+    "dateTo": "Hasta",
+    "noData": "No hay datos"
   },
   "settings": {
     "title": "Configuración",
@@ -153,5 +181,15 @@
     "unauthorized": "No autorizado",
     "serverError": "Error del servidor",
     "networkError": "Error de red"
+  },
+  "validation": {
+    "required": "Este campo es requerido",
+    "maxLength": "Máximo {{max}} caracteres",
+    "minValue": "El valor mínimo es {{min}}",
+    "mustBeInteger": "Debe ser un número entero",
+    "priceMustBePositive": "Debe ser mayor a 0",
+    "minQuantity": "Mínimo 1 unidad",
+    "selectCategory": "Selecciona una categoría",
+    "selectProduct": "Selecciona un producto"
   }
 }

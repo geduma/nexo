@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { notifications } from "@mantine/notifications";
+import { useTranslation } from "react-i18next";
 import { apiClient } from "../../../services/api/client";
 import type { Product, PaginatedResponse } from "../../../types";
 
@@ -48,6 +49,7 @@ export function useProduct(id: string) {
 
 export function useCreateProduct() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   return useMutation({
     mutationFn: async (data: Product) => {
@@ -55,13 +57,20 @@ export function useCreateProduct() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
-      notifications.show({ message: "Producto creado", color: "green" });
+      notifications.show({ message: t("products.created"), color: "green" });
+    },
+    onError: (error: { response?: { data?: { message?: string } } }) => {
+      notifications.show({
+        message: error.response?.data?.message ?? t("products.createError"),
+        color: "red",
+      });
     },
   });
 }
 
 export function useUpdateProduct() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<Product> }) => {
@@ -69,13 +78,20 @@ export function useUpdateProduct() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
-      notifications.show({ message: "Producto actualizado", color: "green" });
+      notifications.show({ message: t("products.updated"), color: "green" });
+    },
+    onError: (error: { response?: { data?: { message?: string } } }) => {
+      notifications.show({
+        message: error.response?.data?.message ?? t("products.updateError"),
+        color: "red",
+      });
     },
   });
 }
 
 export function useDeleteProduct() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   return useMutation({
     mutationFn: async (id: string) => {
@@ -83,7 +99,13 @@ export function useDeleteProduct() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
-      notifications.show({ message: "Producto eliminado", color: "green" });
+      notifications.show({ message: t("products.deleted"), color: "green" });
+    },
+    onError: (error: { response?: { data?: { message?: string } } }) => {
+      notifications.show({
+        message: error.response?.data?.message ?? t("products.deleteError"),
+        color: "red",
+      });
     },
   });
 }

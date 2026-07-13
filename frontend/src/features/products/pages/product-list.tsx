@@ -61,19 +61,19 @@ export function ProductListPage() {
         <Table striped highlightOnHover>
           <Table.Thead>
             <Table.Tr>
-              <Table.Th>{t("products.name")}</Table.Th>
-              <Table.Th>{t("products.category")}</Table.Th>
-              <Table.Th>{t("products.priceSale")}</Table.Th>
-              <Table.Th>{t("products.availability")}</Table.Th>
-              <Table.Th>{t("products.visible")}</Table.Th>
-              <Table.Th>{t("products.featured")}</Table.Th>
-              <Table.Th>{t("common.actions")}</Table.Th>
+              <Table.Th style={{ width: "25%" }}>{t("products.name")}</Table.Th>
+              <Table.Th style={{ width: "15%" }}>{t("products.category")}</Table.Th>
+              <Table.Th style={{ width: "12%" }}>{t("products.priceSale")}</Table.Th>
+              <Table.Th style={{ width: "16%" }}>{t("products.availability")}</Table.Th>
+              <Table.Th style={{ width: "10%" }}>{t("products.visible")}</Table.Th>
+              <Table.Th style={{ width: "10%" }}>{t("products.featured")}</Table.Th>
+              <Table.Th style={{ width: "12%", textAlign: "right" }}>{t("common.actions")}</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
             {products.map((product) => (
               <Table.Tr key={product.id}>
-                <Table.Td>{product.name}</Table.Td>
+                <Table.Td style={{ fontWeight: 500 }}>{product.name}</Table.Td>
                 <Table.Td>{product.category?.name ?? "-"}</Table.Td>
                 <Table.Td>${product.priceSale.toLocaleString()}</Table.Td>
                 <Table.Td>
@@ -90,7 +90,7 @@ export function ProductListPage() {
                   </Badge>
                 </Table.Td>
                 <Table.Td>
-                  <Group gap="xs">
+                  <Group gap="xs" justify="flex-end">
                     <ActionIcon variant="subtle" onClick={() => navigate(`/products/${product.id}/edit`)}>
                       <Edit size={16} />
                     </ActionIcon>

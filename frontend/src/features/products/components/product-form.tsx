@@ -8,7 +8,8 @@ import {
   Button,
   Group,
 } from "@mantine/core";
-import { useForm } from "react-hook-form";
+import { notifications } from "@mantine/notifications";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
@@ -37,10 +38,8 @@ export function ProductFormComponent({
   });
 
   const {
-    register,
     handleSubmit,
-    watch,
-    setValue,
+    control,
     formState: { errors },
   } = useForm<ProductForm>({
     resolver: zodResolver(productSchema),
@@ -62,74 +61,144 @@ export function ProductFormComponent({
   );
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit, (err) => {
+      notifications.show({
+        title: t("common.error"),
+        message: Object.values(err).map(e => e?.message).filter(Boolean).join(", "),
+        color: "red",
+      });
+    })}>
       <Stack gap="md">
-        <TextInput
-          label={t("products.name")}
-          {...register("name")}
-          error={errors.name?.message}
-          required
+        <Controller
+          name="name"
+          control={control}
+          render={({ field }) => (
+            <TextInput
+              label={t("products.name")}
+              {...field}
+              value={field.value ?? ""}
+              error={errors.name?.message}
+              required
+            />
+          )}
         />
 
-        <Textarea
-          label={t("products.description")}
-          {...register("description")}
+        <Controller
+          name="description"
+          control={control}
+          render={({ field }) => (
+            <Textarea
+              label={t("products.description")}
+              {...field}
+              value={field.value ?? ""}
+            />
+          )}
         />
 
-        <Select
-          label={t("products.category")}
-          data={categoryOptions}
-          value={watch("categoryId")}
-          onChange={(v) => v && setValue("categoryId", v)}
-          error={errors.categoryId?.message}
-          searchable
-          required
+        <Controller
+          name="categoryId"
+          control={control}
+          render={({ field }) => (
+            <Select
+              label={t("products.category")}
+              data={categoryOptions}
+              {...field}
+              value={field.value ?? null}
+              error={errors.categoryId?.message}
+              searchable
+              required
+            />
+          )}
         />
 
-        <NumberInput
-          label={t("products.priceCost")}
-          value={watch("priceCost")}
-          onChange={(val) => setValue("priceCost", Number(val ?? 0))}
-          min={0}
-          prefix="$"
+        <Controller
+          name="priceCost"
+          control={control}
+          render={({ field }) => (
+            <NumberInput
+              {...field}
+              label={t("products.priceCost")}
+              value={field.value}
+              onChange={(val) => field.onChange(Number(val ?? 0))}
+              error={errors.priceCost?.message}
+              min={0}
+              prefix="$"
+            />
+          )}
         />
 
-        <NumberInput
-          label={t("products.priceSale")}
-          value={watch("priceSale")}
-          onChange={(val) => setValue("priceSale", Number(val ?? 0))}
-          min={0.01}
-          prefix="$"
-          required
+        <Controller
+          name="priceSale"
+          control={control}
+          render={({ field }) => (
+            <NumberInput
+              {...field}
+              label={t("products.priceSale")}
+              value={field.value}
+              onChange={(val) => field.onChange(Number(val ?? 0))}
+              error={errors.priceSale?.message}
+              min={0.01}
+              prefix="$"
+              required
+            />
+          )}
         />
 
-        <Select
-          label={t("products.availability")}
-          value={watch("availabilityStatus")}
-          onChange={(v) =>
-            v && setValue("availabilityStatus", v as "IN_STOCK" | "CHECK_SUPPLIER")
-          }
-          data={[
-            { value: "IN_STOCK", label: t("availability.IN_STOCK") },
-            { value: "CHECK_SUPPLIER", label: t("availability.CHECK_SUPPLIER") },
-          ]}
+        <Controller
+          name="availabilityStatus"
+          control={control}
+          render={({ field }) => (
+            <Select
+              label={t("products.availability")}
+              {...field}
+              value={field.value ?? null}
+              error={errors.availabilityStatus?.message}
+              data={[
+                { value: "IN_STOCK", label: t("availability.IN_STOCK") },
+                { value: "CHECK_SUPPLIER", label: t("availability.CHECK_SUPPLIER") },
+              ]}
+            />
+          )}
         />
 
-        <Textarea
-          label={t("products.supplierInfo")}
-          {...register("supplierInfo")}
+        <Controller
+          name="supplierInfo"
+          control={control}
+          render={({ field }) => (
+            <Textarea
+              label={t("products.supplierInfo")}
+              {...field}
+              value={field.value ?? ""}
+            />
+          )}
         />
 
-        <Switch
-          label={t("products.visible")}
-          checked={watch("isVisible")}
-          onChange={(e) => setValue("isVisible", e.currentTarget.checked)}
+        <Controller
+          name="isVisible"
+          control={control}
+          render={({ field: { ref, value: _value, ...field } }) => (
+            <Switch
+              {...field}
+              ref={ref}
+              label={t("products.visible")}
+              checked={_value}
+              onChange={(e) => field.onChange(e.currentTarget.checked)}
+            />
+          )}
         />
 
-        <Switch
-          label={t("products.featured")}
-          checked={watch("isFeatured")}
-          onChange={(e) => setValue("isFeatured", e.currentTarget.checked)}
+        <Controller
+          name="isFeatured"
+          control={control}
+          render={({ field: { ref, value: _value, ...field } }) => (
+            <Switch
+              {...field}
+              ref={ref}
+              label={t("products.featured")}
+              checked={_value}
+              onChange={(e) => field.onChange(e.currentTarget.checked)}
+            />
+          )}
         />
 
         <Group justify="flex-end">

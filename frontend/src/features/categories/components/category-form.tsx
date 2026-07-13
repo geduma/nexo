@@ -7,7 +7,8 @@ import {
   Button,
   Group,
 } from "@mantine/core";
-import { useForm } from "react-hook-form";
+import { notifications } from "@mantine/notifications";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 import { categorySchema, type CategoryForm } from "../validations/category.schema";
@@ -26,10 +27,8 @@ export function CategoryFormComponent({
   const { t } = useTranslation();
 
   const {
-    register,
     handleSubmit,
-    watch,
-    setValue,
+    control,
     formState: { errors },
   } = useForm<CategoryForm>({
     resolver: zodResolver(categorySchema),
@@ -41,31 +40,66 @@ export function CategoryFormComponent({
   });
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit, (err) => {
+      notifications.show({
+        title: t("common.error"),
+        message: Object.values(err).map(e => e?.message).filter(Boolean).join(", "),
+        color: "red",
+      });
+    })}>
       <Stack gap="md">
-        <TextInput
-          label={t("categories.name")}
-          {...register("name")}
-          error={errors.name?.message}
-          required
+        <Controller
+          name="name"
+          control={control}
+          render={({ field }) => (
+            <TextInput
+              label={t("categories.name")}
+              {...field}
+              value={field.value ?? ""}
+              error={errors.name?.message}
+              required
+            />
+          )}
         />
 
-        <Textarea
-          label={t("categories.description")}
-          {...register("description")}
+        <Controller
+          name="description"
+          control={control}
+          render={({ field }) => (
+            <Textarea
+              label={t("categories.description")}
+              {...field}
+              value={field.value ?? ""}
+            />
+          )}
         />
 
-        <NumberInput
-          label={t("categories.displayOrder")}
-          value={watch("displayOrder")}
-          onChange={(val) => setValue("displayOrder", Number(val ?? 0))}
-          min={0}
+        <Controller
+          name="displayOrder"
+          control={control}
+          render={({ field }) => (
+            <NumberInput
+              {...field}
+              label={t("categories.displayOrder")}
+              value={field.value ?? 0}
+              onChange={(val) => field.onChange(Number(val ?? 0))}
+              min={0}
+            />
+          )}
         />
 
-        <Switch
-          label={t("categories.active")}
-          checked={watch("isActive")}
-          onChange={(e) => setValue("isActive", e.currentTarget.checked)}
+        <Controller
+          name="isActive"
+          control={control}
+          render={({ field: { ref, value: _value, ...field } }) => (
+            <Switch
+              {...field}
+              ref={ref}
+              label={t("categories.active")}
+              checked={_value}
+              onChange={(e) => field.onChange(e.currentTarget.checked)}
+            />
+          )}
         />
 
         <Group justify="flex-end">
