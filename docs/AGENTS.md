@@ -96,6 +96,14 @@ import { Button } from '../../../components/button';
 - Use Zod for all validation (shared between frontend and backend)
 - All visible UI strings must use i18n translation keys (`useTranslation()`)
 
+### Design System
+
+- **Global default radius**: `defaultRadius: "lg"` set in Mantine theme - all components inherit this
+- Do NOT use explicit `radius="md"` on components - they should inherit the global default
+- Do NOT use `var(--mantine-radius-md)` in inline styles - use `var(--mantine-radius-lg)` instead
+- Consistent gray color palette defined in theme provider
+- All UI strings must use i18n translation keys (`t()`) - never hardcode Spanish/English strings directly
+
 ---
 
 ## 5. API Response Format
@@ -174,6 +182,23 @@ Key rules to always follow:
 - API calls go through a centralized Axios client (`src/services/api/client.ts`)
 - Vite dev server proxies `/api` to `http://localhost:3001`
 
+### Public Catalog
+
+- Product cards with hover effects (translateY + shadow), image zoom, overlay badges
+- Buy button on IN_STOCK products (shows "pending implementation" toast)
+- WhatsApp button on cards and detail modal (requires configured WhatsApp number in settings)
+- Detail modal with image carousel, pagination dots, buy + WhatsApp CTAs
+- Search and category filter on same line (Flex layout)
+- Grid skeleton loading state during data fetch
+- Sticky footer with `min-height: 100vh` flex layout
+
+### Social Generator
+
+- Layout options: Single Image (with size variations) or Mosaic (max 5 images)
+- Mosaic layouts adapt per template: story (vertical), square (balanced), landscape (horizontal)
+- Auto-extracted dominant color from product image for gradient background
+- Uses plain HTML divs for mosaic rendering (not Mantine components) to avoid layout issues
+
 ---
 
 ## 11. Backend Patterns
@@ -185,6 +210,7 @@ Key rules to always follow:
 - Helmet for security headers
 - Multer for file uploads (images)
 - Swagger docs auto-generated via `swagger-jsdoc`
+- **Supabase snake_case mapping**: Repositories must map snake_case DB columns to camelCase frontend fields using a `toCamelCase()` helper method (see `settings.repository.ts` for reference)
 
 ---
 
@@ -216,3 +242,5 @@ Never hardcode URLs or secrets. Always use environment variables.
 - Do not create multi-tenant or multi-user logic
 - Do not implement inventory management or stock tracking
 - Do not add comments to code unless explicitly requested
+- Do not use explicit `radius="md"` on Mantine components - use the global default
+- Do not use `var(--mantine-radius-md)` in inline CSS - use `var(--mantine-radius-lg)`

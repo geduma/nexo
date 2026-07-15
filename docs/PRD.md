@@ -175,12 +175,24 @@ Reports use only registered sales. Historical sales remain valid even if product
 - Featured products section
 - Category filter
 - Hidden products return 404 if accessed by URL
+- Redesigned catalog home with centered business header, gradient background, sticky footer
+- Search input and category filter displayed on the same line (Flex layout)
+- Product cards with hover effects (translateY + shadow), image zoom, overlay badges
+- Buy button on IN_STOCK products (shows "pending implementation" toast)
+- WhatsApp button on product cards and detail modal (requires configured WhatsApp number)
+- Product detail modal with image carousel, pagination dots, buy + WhatsApp CTAs
+- Grid skeleton loading state during data fetch
 
 ### 4.9 Social Media Generator
 
 - Product selector
 - Three templates: Square (1080x1080), Story (1080x1920), Landscape (1200x628)
-- Live preview canvas
+- Layout options: Single Image or Mosaic
+- Single image layout with size variations: Small, Medium, Large
+- Mosaic layout with magazine-style arrangements per template (1-5 product images)
+- Mosaic grid adapts per template: story (vertical), square (balanced), landscape (horizontal)
+- Live preview canvas with auto-extracted dominant color from product image
+- Gradient background generation from base color
 - PNG download via html-to-image
 - Marketing text copy to clipboard
 
@@ -240,6 +252,8 @@ Changes propagate to admin panel, public catalog, browser title, and generated l
 - Light, Dark, and System modes
 - Persisted in localStorage
 - Custom Mantine theme with blue primary color
+- Global default border radius: `lg` (all components inherit this radius)
+- Custom gray and dark color palettes
 
 ---
 
@@ -326,3 +340,4 @@ Changes propagate to admin panel, public catalog, browser title, and generated l
 | Version | Date | Changes |
 |---|---|---|
 | 0.1.0 | July 2026 | MVP initial implementation |
+| 0.2.0 | July 2026 | UI/UX improvements: catalog redesign, social generator enhancements, design system |
