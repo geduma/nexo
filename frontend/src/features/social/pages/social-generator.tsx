@@ -46,11 +46,11 @@ export function SocialGeneratorPage() {
   const [copied, setCopied] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
-  const { data: products } = useQuery<{ data: Product[] }>({
+  const { data: products } = useQuery<Product[]>({
     queryKey: ["products-select"],
     queryFn: async () => {
       const response = await apiClient.get("/products?limit=100&visible=true");
-      return response.data;
+      return response.data.data;
     },
   });
 
@@ -62,10 +62,10 @@ export function SocialGeneratorPage() {
     },
   });
 
-  const product = products?.data?.find((p) => p.id === selectedProduct);
+  const product = products?.find((p) => p.id === selectedProduct);
   const settingsData = settings?.data;
 
-  const productOptions = (products?.data ?? []).map((p) => ({
+  const productOptions = (products ?? []).map((p) => ({
     value: p.id,
     label: p.name,
   }));
@@ -83,8 +83,10 @@ export function SocialGeneratorPage() {
     if (product.description) {
       text += `${product.description}\n\n`;
     }
-    text += ` ${settingsData.businessName}\n`;
-    text += ` Consulta: wa.me/${settingsData.whatsappNumber}`;
+    if (settingsData.businessName) {
+      text += `${settingsData.businessName}\n`;
+    }
+    text += `Consulta: wa.me/${settingsData.whatsappNumber}`;
     return text;
   };
 
@@ -197,9 +199,11 @@ export function SocialGeneratorPage() {
                   {product.description.slice(0, 100)}
                 </Text>
               )}
-              <Text size="xs" mt={8} style={{ opacity: 0.7 }}>
-                {settingsData?.businessName ?? "NEXO"}
-              </Text>
+              {settingsData?.businessName && (
+                <Text size="xs" mt={8} style={{ opacity: 0.7 }}>
+                  {settingsData.businessName}
+                </Text>
+              )}
             </div>
           ) : (
             <Text c="dimmed" ta="center" py="xl">

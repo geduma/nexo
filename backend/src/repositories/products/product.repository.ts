@@ -4,7 +4,7 @@ import type { ProductFilterDto } from "../../validators/pagination.validator.js"
 
 export class ProductRepository {
   async findAll(filters: ProductFilterDto) {
-    const { page, limit, sortBy, sortOrder, category, featured, availability, search, visible } = filters;
+    const { page, limit, sortBy, sortOrder, category, availability, search, visible } = filters;
     const from = (page - 1) * limit;
     const to = from + limit - 1;
     const ascending = sortOrder === "ASC";
@@ -16,7 +16,6 @@ export class ProductRepository {
 
     if (visible !== undefined) query = query.eq("is_visible", visible);
     if (category) query = query.eq("category_id", category);
-    if (featured !== undefined) query = query.eq("is_featured", featured);
     if (availability) query = query.eq("availability_status", availability);
     if (search) query = query.ilike("name", `%${search}%`);
 
@@ -35,7 +34,6 @@ export class ProductRepository {
       priceSale: p.price_sale,
       availabilityStatus: p.availability_status,
       supplierInfo: p.supplier_info,
-      isFeatured: p.is_featured,
       isVisible: p.is_visible,
       createdAt: p.created_at,
       updatedAt: p.updated_at,
@@ -73,7 +71,6 @@ export class ProductRepository {
       priceSale: data.price_sale,
       availabilityStatus: data.availability_status,
       supplierInfo: data.supplier_info,
-      isFeatured: data.is_featured,
       isVisible: data.is_visible,
       createdAt: data.created_at,
       updatedAt: data.updated_at,
@@ -93,7 +90,6 @@ export class ProductRepository {
         price_sale: data.priceSale.toString(),
         availability_status: data.availabilityStatus,
         supplier_info: data.supplierInfo,
-        is_featured: data.isFeatured ?? false,
         is_visible: data.isVisible ?? true,
       })
       .select()
@@ -111,7 +107,6 @@ export class ProductRepository {
     if (data.priceSale !== undefined) updateData.price_sale = data.priceSale.toString();
     if (data.availabilityStatus !== undefined) updateData.availability_status = data.availabilityStatus;
     if (data.supplierInfo !== undefined) updateData.supplier_info = data.supplierInfo;
-    if (data.isFeatured !== undefined) updateData.is_featured = data.isFeatured;
     if (data.isVisible !== undefined) updateData.is_visible = data.isVisible;
 
     const { data: result, error } = await supabase

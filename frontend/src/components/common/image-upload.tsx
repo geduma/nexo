@@ -15,7 +15,7 @@ const MAX_PRODUCT_IMAGES = 5;
 const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
-interface ImageFile {
+export interface ImageFile {
   id?: string;
   file?: File;
   preview: string;

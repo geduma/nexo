@@ -1,21 +1,50 @@
 import { create } from "zustand";
 
+const IDLE_TIMEOUT_MS = 30 * 60 * 1000;
+
 interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
+  lastActivity: number;
   login: (token: string) => void;
   logout: () => void;
+  touchActivity: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  token: localStorage.getItem("token"),
-  isAuthenticated: !!localStorage.getItem("token"),
-  login: (token: string) => {
-    localStorage.setItem("token", token);
-    set({ token, isAuthenticated: true });
-  },
-  logout: () => {
+function isTokenExpired(): boolean {
+  const lastActivity = Number(localStorage.getItem("lastActivity") ?? "0");
+  if (!lastActivity) return true;
+  return Date.now() - lastActivity > IDLE_TIMEOUT_MS;
+}
+
+export const useAuthStore = create<AuthState>((set, get) => {
+  const storedToken = localStorage.getItem("token");
+  let valid = !!storedToken;
+  if (storedToken && isTokenExpired()) {
     localStorage.removeItem("token");
-    set({ token: null, isAuthenticated: false });
-  },
-}));
+    localStorage.removeItem("lastActivity");
+    valid = false;
+  }
+
+  return {
+    token: valid ? storedToken : null,
+    isAuthenticated: valid,
+    lastActivity: Number(localStorage.getItem("lastActivity") ?? Date.now()),
+    login: (token: string) => {
+      const now = Date.now();
+      localStorage.setItem("token", token);
+      localStorage.setItem("lastActivity", String(now));
+      set({ token, isAuthenticated: true, lastActivity: now });
+    },
+    logout: () => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("lastActivity");
+      set({ token: null, isAuthenticated: false, lastActivity: 0 });
+    },
+    touchActivity: () => {
+      const now = Date.now();
+      localStorage.setItem("lastActivity", String(now));
+      set({ lastActivity: now });
+    },
+  };
+});

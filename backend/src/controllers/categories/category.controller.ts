@@ -6,8 +6,14 @@ import type { PaginationDto } from "../../validators/pagination.validator.js";
 export class CategoryController {
   async getAll(req: Request, res: Response): Promise<void> {
     try {
-      const pagination = req.query as unknown as PaginationDto;
-      const search = req.query.search as string | undefined;
+      const rawQuery = req.query as Record<string, unknown>;
+      const pagination: PaginationDto = {
+        page: Number(rawQuery.page) || 1,
+        limit: Number(rawQuery.limit) || 20,
+        sortBy: (rawQuery.sortBy as string) || "created_at",
+        sortOrder: (rawQuery.sortOrder as "ASC" | "DESC") === "ASC" ? "ASC" : "DESC",
+      };
+      const search = rawQuery.search as string | undefined;
       const result = await categoryService.getAll(pagination, search);
       res.json({ success: true, data: result.data, pagination: result.pagination });
     } catch (error) {

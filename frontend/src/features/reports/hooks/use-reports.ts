@@ -47,10 +47,20 @@ export function useDailySales(dateRange?: DateRange) {
 }
 
 export function useDashboardData() {
-  return useQuery<ReportSummary>({
+  return useQuery<{
+    totalProducts: number;
+    visibleProducts: number;
+    totalCategories: number;
+    totalSales: number;
+    totalRevenue: number;
+    averageSale: number;
+    salesByDay: Array<{ date: string; revenue: number; count: number }>;
+    topProducts: Array<{ productName: string; totalQuantity: number; totalRevenue: number }>;
+    recentSales: Array<Record<string, unknown>>;
+  }>({
     queryKey: ["reports", "dashboard"],
     queryFn: async () => {
-      const response = await apiClient.get("/reports/summary");
+      const response = await apiClient.get("/reports/dashboard");
       return response.data.data;
     },
   });

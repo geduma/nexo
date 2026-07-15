@@ -9,7 +9,6 @@ export const productSchema = z.object({
   priceSale: z.number({ message: i18n.t("validation.required") }).positive(i18n.t("validation.priceMustBePositive")),
   availabilityStatus: z.enum(["IN_STOCK", "CHECK_SUPPLIER"]),
   supplierInfo: z.string().optional(),
-  isFeatured: z.boolean(),
   isVisible: z.boolean(),
 });
 

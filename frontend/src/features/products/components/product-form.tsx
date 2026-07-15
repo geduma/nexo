@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   Stack,
   TextInput,
@@ -7,7 +8,9 @@ import {
   Select,
   Button,
   Group,
+  Collapse,
 } from "@mantine/core";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { notifications } from "@mantine/notifications";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,24 +18,38 @@ import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../services/api/client";
 import { productSchema, type ProductForm } from "../validations/product.schema";
+import { ImageUpload, type ImageFile } from "../../../components/common/image-upload";
 
 interface ProductFormComponentProps {
   defaultValues?: Partial<ProductForm>;
-  onSubmit: (data: ProductForm) => void;
+  onSubmit: (data: ProductForm, imageFiles?: ImageFile[]) => void;
   loading?: boolean;
+  existingImages?: ImageFile[];
+  productId?: string;
 }
 
 export function ProductFormComponent({
   defaultValues,
   onSubmit,
   loading = false,
+  existingImages,
+  productId,
 }: ProductFormComponentProps) {
   const { t } = useTranslation();
+  const [imageFiles, setImageFiles] = useState<ImageFile[]>(existingImages ?? []);
+  useEffect(() => {
+    if (existingImages && existingImages.length > 0) {
+      setImageFiles(existingImages);
+    }
+  }, [existingImages]);
+  const [extraOpen, setExtraOpen] = useState(
+    !!(defaultValues?.description || defaultValues?.supplierInfo)
+  );
 
   const { data: categoriesData } = useQuery({
     queryKey: ["categories-select"],
     queryFn: async () => {
-      const response = await apiClient.get("/categories?limit=100");
+      const response = await apiClient.get("/categories?limit=100&sortBy=name&sortOrder=ASC");
       return response.data.data;
     },
   });
@@ -45,7 +62,6 @@ export function ProductFormComponent({
     resolver: zodResolver(productSchema),
     defaultValues: {
       availabilityStatus: "IN_STOCK",
-      isFeatured: false,
       isVisible: true,
       priceCost: 0,
       priceSale: 0,
@@ -61,7 +77,7 @@ export function ProductFormComponent({
   );
 
   return (
-    <form onSubmit={handleSubmit(onSubmit, (err) => {
+    <form onSubmit={handleSubmit((data) => onSubmit(data, imageFiles), (err) => {
       notifications.show({
         title: t("common.error"),
         message: Object.values(err).map(e => e?.message).filter(Boolean).join(", "),
@@ -79,18 +95,6 @@ export function ProductFormComponent({
               value={field.value ?? ""}
               error={errors.name?.message}
               required
-            />
-          )}
-        />
-
-        <Controller
-          name="description"
-          control={control}
-          render={({ field }) => (
-            <Textarea
-              label={t("products.description")}
-              {...field}
-              value={field.value ?? ""}
             />
           )}
         />
@@ -162,18 +166,6 @@ export function ProductFormComponent({
         />
 
         <Controller
-          name="supplierInfo"
-          control={control}
-          render={({ field }) => (
-            <Textarea
-              label={t("products.supplierInfo")}
-              {...field}
-              value={field.value ?? ""}
-            />
-          )}
-        />
-
-        <Controller
           name="isVisible"
           control={control}
           render={({ field: { ref, value: _value, ...field } }) => (
@@ -187,19 +179,44 @@ export function ProductFormComponent({
           )}
         />
 
-        <Controller
-          name="isFeatured"
-          control={control}
-          render={({ field: { ref, value: _value, ...field } }) => (
-            <Switch
-              {...field}
-              ref={ref}
-              label={t("products.featured")}
-              checked={_value}
-              onChange={(e) => field.onChange(e.currentTarget.checked)}
+        <Button
+          variant="subtle"
+          size="sm"
+          onClick={() => setExtraOpen((o) => !o)}
+          leftSection={extraOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+        >
+          {t("products.moreFields")}
+        </Button>
+
+        <Collapse in={extraOpen}>
+          <Stack gap="md">
+            <Controller
+              name="description"
+              control={control}
+              render={({ field }) => (
+                <Textarea
+                  label={t("products.description")}
+                  {...field}
+                  value={field.value ?? ""}
+                />
+              )}
             />
-          )}
-        />
+
+            <Controller
+              name="supplierInfo"
+              control={control}
+              render={({ field }) => (
+                <Textarea
+                  label={t("products.supplierInfo")}
+                  {...field}
+                  value={field.value ?? ""}
+                />
+              )}
+            />
+          </Stack>
+        </Collapse>
+
+        <ImageUpload images={imageFiles} onChange={setImageFiles} />
 
         <Group justify="flex-end">
           <Button type="submit" loading={loading}>

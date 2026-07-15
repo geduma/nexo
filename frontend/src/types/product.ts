@@ -11,7 +11,6 @@ export interface Product {
   priceSale: number;
   availabilityStatus: ProductAvailabilityStatus;
   supplierInfo: string | null;
-  isFeatured: boolean;
   isVisible: boolean;
   createdAt: string;
   updatedAt: string;

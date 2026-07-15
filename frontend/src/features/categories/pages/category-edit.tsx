@@ -25,7 +25,6 @@ export function CategoryEditPage() {
         defaultValues={{
           name: cat.name,
           description: cat.description ?? undefined,
-          displayOrder: cat.displayOrder,
           isActive: cat.isActive,
         }}
         onSubmit={(data) =>

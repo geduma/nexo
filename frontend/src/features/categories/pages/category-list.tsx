@@ -60,17 +60,15 @@ export function CategoryListPage() {
         <Table striped highlightOnHover>
           <Table.Thead>
             <Table.Tr>
-              <Table.Th style={{ width: "40%" }}>{t("categories.name")}</Table.Th>
-              <Table.Th style={{ width: "20%" }}>{t("categories.displayOrder")}</Table.Th>
+              <Table.Th style={{ width: "50%" }}>{t("categories.name")}</Table.Th>
               <Table.Th style={{ width: "20%" }}>{t("categories.active")}</Table.Th>
-              <Table.Th style={{ width: "20%", textAlign: "right" }}>{t("common.actions")}</Table.Th>
+              <Table.Th style={{ width: "30%", textAlign: "right" }}>{t("common.actions")}</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
             {categories.map((category) => (
               <Table.Tr key={category.id}>
                 <Table.Td style={{ fontWeight: 500 }}>{category.name}</Table.Td>
-                <Table.Td>{category.displayOrder}</Table.Td>
                 <Table.Td>
                   <Badge color={category.isActive ? "green" : "gray"}>
                     {category.isActive ? t("common.yes") : t("common.no")}

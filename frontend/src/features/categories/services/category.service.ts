@@ -27,7 +27,7 @@ export const categoryService = {
     return response.data;
   },
 
-  create: async (data: { name: string; description?: string; displayOrder: number; isActive: boolean }) => {
+  create: async (data: { name: string; description?: string; isActive: boolean }) => {
     return apiClient.post("/categories", data);
   },
 

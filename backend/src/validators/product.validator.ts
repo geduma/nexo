@@ -8,7 +8,6 @@ export const createProductSchema = z.object({
   priceSale: z.number().positive(),
   availabilityStatus: z.enum(["IN_STOCK", "CHECK_SUPPLIER"]).default("IN_STOCK"),
   supplierInfo: z.string().optional(),
-  isFeatured: z.boolean().default(false),
   isVisible: z.boolean().default(true),
 });
 
@@ -20,7 +19,6 @@ export const updateProductSchema = z.object({
   priceSale: z.number().positive().optional(),
   availabilityStatus: z.enum(["IN_STOCK", "CHECK_SUPPLIER"]).optional(),
   supplierInfo: z.string().optional(),
-  isFeatured: z.boolean().optional(),
   isVisible: z.boolean().optional(),
 });
 

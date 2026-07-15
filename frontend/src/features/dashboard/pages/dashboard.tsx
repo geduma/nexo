@@ -33,7 +33,7 @@ export function DashboardPage() {
       <Title order={2}>{t("dashboard.title")}</Title>
 
       <StatCards
-        totalProducts={0}
+        totalProducts={reportData?.totalProducts ?? 0}
         totalSales={reportData?.totalSales}
         totalRevenue={reportData?.totalRevenue}
         averageSale={reportData?.averageSale}

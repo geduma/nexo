@@ -1,5 +1,25 @@
 import { supabase } from "../../config/database.js";
 
+export interface ImageRow {
+  id: string;
+  productId: string;
+  imageUrl: string;
+  displayOrder: number;
+  isPrimary: boolean;
+  createdAt: string;
+}
+
+function mapImage(row: Record<string, unknown>): ImageRow {
+  return {
+    id: String(row.id ?? ""),
+    productId: String(row.product_id ?? ""),
+    imageUrl: String(row.image_url ?? ""),
+    displayOrder: Number(row.display_order ?? 0),
+    isPrimary: Boolean(row.is_primary ?? false),
+    createdAt: String(row.created_at ?? ""),
+  };
+}
+
 export class ImageRepository {
   async findByProduct(productId: string) {
     const { data, error } = await supabase
@@ -8,7 +28,7 @@ export class ImageRepository {
       .eq("product_id", productId)
       .order("display_order", { ascending: true });
     if (error) throw error;
-    return data ?? [];
+    return (data ?? []).map(mapImage);
   }
 
   async findById(id: string) {
@@ -18,7 +38,7 @@ export class ImageRepository {
       .eq("id", id)
       .single();
     if (error && error.code !== "PGRST116") throw error;
-    return data ?? null;
+    return data ? mapImage(data) : null;
   }
 
   async getPrimary(productId: string) {
@@ -30,7 +50,7 @@ export class ImageRepository {
       .limit(1)
       .single();
     if (error && error.code !== "PGRST116") throw error;
-    return data ?? null;
+    return data ? mapImage(data) : null;
   }
 
   async countByProduct(productId: string) {
@@ -54,7 +74,7 @@ export class ImageRepository {
       .select()
       .single();
     if (error) throw error;
-    return result;
+    return mapImage(result);
   }
 
   async update(id: string, data: { displayOrder?: number; isPrimary?: boolean }) {
@@ -69,13 +89,13 @@ export class ImageRepository {
       .select()
       .single();
     if (error) throw error;
-    return result;
+    return mapImage(result);
   }
 
   async delete(id: string) {
     const { data, error } = await supabase.from("product_images").delete().eq("id", id).select().single();
     if (error) throw error;
-    return data;
+    return mapImage(data);
   }
 
   async deleteByProduct(productId: string) {

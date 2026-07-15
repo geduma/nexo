@@ -1,12 +1,12 @@
 import type { Request, Response } from "express";
 import { productService } from "../../services/products/product.service.js";
 import type { CreateProductDto, UpdateProductDto } from "../../validators/product.validator.js";
-import type { ProductFilterDto } from "../../validators/pagination.validator.js";
+import { productFilterSchema } from "../../validators/pagination.validator.js";
 
 export class ProductController {
   async getAll(req: Request, res: Response): Promise<void> {
     try {
-      const filters = req.query as unknown as ProductFilterDto;
+      const filters = productFilterSchema.parse(req.query);
       const result = await productService.getAll(filters);
       res.json({ success: true, data: result.data, pagination: result.pagination });
     } catch (error) {

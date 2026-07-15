@@ -57,6 +57,7 @@ export function useCreateSale() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sales"] });
+      queryClient.invalidateQueries({ queryKey: ["reports"] });
       notifications.show({ message: t("sales.created"), color: "green" });
     },
     onError: (error: { response?: { data?: { message?: string } } }) => {
@@ -78,6 +79,7 @@ export function useUpdateSale() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sales"] });
+      queryClient.invalidateQueries({ queryKey: ["reports"] });
       notifications.show({ message: t("sales.updated"), color: "green" });
     },
     onError: (error: { response?: { data?: { message?: string } } }) => {
@@ -99,6 +101,7 @@ export function useDeleteSale() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sales"] });
+      queryClient.invalidateQueries({ queryKey: ["reports"] });
       notifications.show({ message: t("sales.deleted"), color: "green" });
     },
     onError: (error: { response?: { data?: { message?: string } } }) => {

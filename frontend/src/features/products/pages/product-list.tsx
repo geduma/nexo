@@ -61,12 +61,11 @@ export function ProductListPage() {
         <Table striped highlightOnHover>
           <Table.Thead>
             <Table.Tr>
-              <Table.Th style={{ width: "25%" }}>{t("products.name")}</Table.Th>
-              <Table.Th style={{ width: "15%" }}>{t("products.category")}</Table.Th>
-              <Table.Th style={{ width: "12%" }}>{t("products.priceSale")}</Table.Th>
-              <Table.Th style={{ width: "16%" }}>{t("products.availability")}</Table.Th>
-              <Table.Th style={{ width: "10%" }}>{t("products.visible")}</Table.Th>
-              <Table.Th style={{ width: "10%" }}>{t("products.featured")}</Table.Th>
+              <Table.Th style={{ width: "28%" }}>{t("products.name")}</Table.Th>
+              <Table.Th style={{ width: "17%" }}>{t("products.category")}</Table.Th>
+              <Table.Th style={{ width: "14%" }}>{t("products.priceSale")}</Table.Th>
+              <Table.Th style={{ width: "17%" }}>{t("products.availability")}</Table.Th>
+              <Table.Th style={{ width: "12%" }}>{t("products.visible")}</Table.Th>
               <Table.Th style={{ width: "12%", textAlign: "right" }}>{t("common.actions")}</Table.Th>
             </Table.Tr>
           </Table.Thead>
@@ -74,7 +73,7 @@ export function ProductListPage() {
             {products.map((product) => (
               <Table.Tr key={product.id}>
                 <Table.Td style={{ fontWeight: 500 }}>{product.name}</Table.Td>
-                <Table.Td>{product.category?.name ?? "-"}</Table.Td>
+                <Table.Td>{(product as { categoryName?: string }).categoryName ?? "-"}</Table.Td>
                 <Table.Td>${product.priceSale.toLocaleString()}</Table.Td>
                 <Table.Td>
                   <AvailabilityBadge status={product.availabilityStatus} />
@@ -82,11 +81,6 @@ export function ProductListPage() {
                 <Table.Td>
                   <Badge color={product.isVisible ? "green" : "gray"}>
                     {product.isVisible ? t("common.yes") : t("common.no")}
-                  </Badge>
-                </Table.Td>
-                <Table.Td>
-                  <Badge color={product.isFeatured ? "blue" : "gray"}>
-                    {product.isFeatured ? t("common.yes") : t("common.no")}
                   </Badge>
                 </Table.Td>
                 <Table.Td>

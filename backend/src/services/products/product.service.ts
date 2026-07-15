@@ -49,10 +49,6 @@ export class ProductService {
       }
     }
 
-    if (data.isFeatured && !data.isVisible && !product.isVisible) {
-      throw Object.assign(new Error("Invisible products cannot be featured"), { statusCode: 422 });
-    }
-
     return productRepository.update(id, data);
   }
 
@@ -72,10 +68,6 @@ export class ProductService {
 
   async countVisible() {
     return productRepository.countVisible();
-  }
-
-  async countFeatured() {
-    return productRepository.countFeatured();
   }
 
   async search(query: string) {

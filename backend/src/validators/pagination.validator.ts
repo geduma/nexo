@@ -9,7 +9,6 @@ export const paginationSchema = z.object({
 
 export const productFilterSchema = paginationSchema.extend({
   category: z.string().uuid().optional(),
-  featured: z.coerce.boolean().optional(),
   availability: z.enum(["IN_STOCK", "CHECK_SUPPLIER"]).optional(),
   search: z.string().optional(),
   visible: z.coerce.boolean().optional(),

@@ -57,6 +57,7 @@ export function useCreateProduct() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["reports"] });
       notifications.show({ message: t("products.created"), color: "green" });
     },
     onError: (error: { response?: { data?: { message?: string } } }) => {
@@ -78,6 +79,7 @@ export function useUpdateProduct() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["reports"] });
       notifications.show({ message: t("products.updated"), color: "green" });
     },
     onError: (error: { response?: { data?: { message?: string } } }) => {
@@ -99,6 +101,7 @@ export function useDeleteProduct() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["reports"] });
       notifications.show({ message: t("products.deleted"), color: "green" });
     },
     onError: (error: { response?: { data?: { message?: string } } }) => {

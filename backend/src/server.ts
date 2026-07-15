@@ -2,10 +2,15 @@ import { app } from "./app.js";
 import { env } from "./config/env.js";
 import { logger } from "./config/logger.js";
 import { checkDatabaseConnection } from "./config/database.js";
+import { storageService } from "./services/storage/storage.service.js";
 
 const start = async (): Promise<void> => {
   logger.info("Checking database connection...");
   const dbOk = await checkDatabaseConnection();
+
+  if (dbOk) {
+    await storageService.ensureBucket();
+  }
 
   if (!dbOk) {
     logger.warn("WARNING: Database is not connected. API will return 503 for DB routes.");

@@ -47,7 +47,6 @@ export interface Category {
   name: string;
   slug: string;
   description: string | null;
-  displayOrder: number;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -62,7 +61,6 @@ export interface Product {
   priceSale: number;
   availabilityStatus: ProductAvailabilityStatus;
   supplierInfo: string | null;
-  isFeatured: boolean;
   isVisible: boolean;
   createdAt: string;
   updatedAt: string;

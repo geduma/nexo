@@ -45,11 +45,12 @@ export function useCreateCategory() {
   const { t } = useTranslation();
 
   return useMutation({
-    mutationFn: async (data: { name: string; description?: string; displayOrder: number; isActive: boolean }) => {
+    mutationFn: async (data: { name: string; description?: string; isActive: boolean }) => {
       return apiClient.post("/categories", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: ["reports"] });
       notifications.show({ message: t("categories.created"), color: "green" });
     },
     onError: (error: { response?: { data?: { message?: string } } }) => {
@@ -71,6 +72,7 @@ export function useUpdateCategory() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: ["reports"] });
       notifications.show({ message: t("categories.updated"), color: "green" });
     },
     onError: (error: { response?: { data?: { message?: string } } }) => {
@@ -92,6 +94,7 @@ export function useDeleteCategory() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: ["reports"] });
       notifications.show({ message: t("categories.deleted"), color: "green" });
     },
     onError: (error: { response?: { data?: { message?: string } } }) => {

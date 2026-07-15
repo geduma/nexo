@@ -2,7 +2,6 @@ import {
   Stack,
   TextInput,
   Textarea,
-  NumberInput,
   Switch,
   Button,
   Group,
@@ -33,7 +32,6 @@ export function CategoryFormComponent({
   } = useForm<CategoryForm>({
     resolver: zodResolver(categorySchema),
     defaultValues: {
-      displayOrder: 0,
       isActive: true,
       ...defaultValues,
     },
@@ -75,27 +73,13 @@ export function CategoryFormComponent({
         />
 
         <Controller
-          name="displayOrder"
-          control={control}
-          render={({ field }) => (
-            <NumberInput
-              {...field}
-              label={t("categories.displayOrder")}
-              value={field.value ?? 0}
-              onChange={(val) => field.onChange(Number(val ?? 0))}
-              min={0}
-            />
-          )}
-        />
-
-        <Controller
           name="isActive"
           control={control}
           render={({ field: { ref, value: _value, ...field } }) => (
             <Switch
               {...field}
               ref={ref}
-              label={t("categories.active")}
+              label={_value ? t("categories.active") : t("common.no")}
               checked={_value}
               onChange={(e) => field.onChange(e.currentTarget.checked)}
             />

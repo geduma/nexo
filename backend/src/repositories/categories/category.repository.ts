@@ -2,13 +2,25 @@ import { supabase } from "../../config/database.js";
 import type { CreateCategoryDto, UpdateCategoryDto } from "../../validators/category.validator.js";
 import type { PaginationDto } from "../../validators/pagination.validator.js";
 
+function mapCategory(row: Record<string, unknown>) {
+  return {
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    description: row.description,
+    isActive: row.is_active,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
 export class CategoryRepository {
   async findAll(pagination: PaginationDto, search?: string) {
     const { page, limit, sortBy, sortOrder } = pagination;
     const from = (page - 1) * limit;
     const to = from + limit - 1;
     const ascending = sortOrder === "ASC";
-    const orderCol = sortBy === "display_order" ? "display_order" : "created_at";
+    const orderCol = sortBy === "name" ? "name" : "created_at";
 
     let query = supabase.from("categories").select("*", { count: "exact" });
     if (search) query = query.ilike("name", `%${search}%`);
@@ -20,7 +32,7 @@ export class CategoryRepository {
     if (error) throw error;
 
     return {
-      data: data ?? [],
+      data: (data ?? []).map(mapCategory),
       pagination: {
         page,
         limit,
@@ -33,7 +45,7 @@ export class CategoryRepository {
   async findById(id: string) {
     const { data, error } = await supabase.from("categories").select("*").eq("id", id).single();
     if (error && error.code !== "PGRST116") throw error;
-    return data ?? null;
+    return data ? mapCategory(data) : null;
   }
 
   async findByName(name: string) {
@@ -64,11 +76,11 @@ export class CategoryRepository {
 
     const { data: result, error } = await supabase
       .from("categories")
-      .insert({ name: data.name, description: data.description, display_order: data.displayOrder, slug })
+      .insert({ name: data.name, description: data.description, slug, is_active: data.isActive })
       .select()
       .single();
     if (error) throw error;
-    return result;
+    return mapCategory(result);
   }
 
   async update(id: string, data: UpdateCategoryDto) {
@@ -81,7 +93,6 @@ export class CategoryRepository {
         .replace(/^-|-$/g, "");
     }
     if (data.description !== undefined) updateData.description = data.description;
-    if (data.displayOrder !== undefined) updateData.display_order = data.displayOrder;
     if (data.isActive !== undefined) updateData.is_active = data.isActive;
 
     const { data: result, error } = await supabase
@@ -91,13 +102,13 @@ export class CategoryRepository {
       .select()
       .single();
     if (error) throw error;
-    return result;
+    return mapCategory(result);
   }
 
   async delete(id: string) {
     const { data, error } = await supabase.from("categories").delete().eq("id", id).select().single();
     if (error) throw error;
-    return data;
+    return mapCategory(data);
   }
 
   async productCountByCategoryId(categoryId: string) {

@@ -30,11 +30,10 @@ export class ReportService {
   }
 
   async getDashboardData() {
-    const [totalProducts, visibleProducts, featuredProducts, totalCategories, totalRevenue, totalSales, recentSales, topProducts] =
+    const [totalProducts, visibleProducts, totalCategories, totalRevenue, totalSales, recentSales, topProducts] =
       await Promise.all([
         productRepository.count(),
         productRepository.countVisible(),
-        productRepository.countFeatured(),
         categoryRepository.countAll(),
         saleRepository.sumRevenue(),
         saleRepository.count(),
@@ -45,7 +44,6 @@ export class ReportService {
     return {
       totalProducts,
       visibleProducts,
-      featuredProducts,
       totalCategories,
       totalRevenue,
       totalSales,
