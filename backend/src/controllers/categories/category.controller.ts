@@ -5,84 +5,39 @@ import type { PaginationDto } from "../../validators/pagination.validator.js";
 
 export class CategoryController {
   async getAll(req: Request, res: Response): Promise<void> {
-    try {
-      const rawQuery = req.query as Record<string, unknown>;
-      const pagination: PaginationDto = {
-        page: Number(rawQuery.page) || 1,
-        limit: Number(rawQuery.limit) || 20,
-        sortBy: (rawQuery.sortBy as string) || "created_at",
-        sortOrder: (rawQuery.sortOrder as "ASC" | "DESC") === "ASC" ? "ASC" : "DESC",
-      };
-      const search = rawQuery.search as string | undefined;
-      const result = await categoryService.getAll(pagination, search);
-      res.json({ success: true, data: result.data, pagination: result.pagination });
-    } catch (error) {
-      const err = error as { statusCode?: number; message: string };
-      res.status(err.statusCode ?? 500).json({
-        success: false,
-        message: err.message,
-        errors: [],
-      });
-    }
+    const rawQuery = req.query as Record<string, unknown>;
+    const pagination: PaginationDto = {
+      page: Number(rawQuery.page) || 1,
+      limit: Number(rawQuery.limit) || 20,
+      sortBy: (rawQuery.sortBy as string) || "created_at",
+      sortOrder: (rawQuery.sortOrder as "ASC" | "DESC") === "ASC" ? "ASC" : "DESC",
+    };
+    const search = rawQuery.search as string | undefined;
+    const result = await categoryService.getAll(pagination, search);
+    res.json({ success: true, data: result.data, pagination: result.pagination });
   }
 
   async getById(req: Request, res: Response): Promise<void> {
-    try {
-      const id = String(req.params.id);
-      const category = await categoryService.getById(id);
-      res.json({ success: true, data: category });
-    } catch (error) {
-      const err = error as { statusCode?: number; message: string };
-      res.status(err.statusCode ?? 500).json({
-        success: false,
-        message: err.message,
-        errors: [],
-      });
-    }
+    const id = String(req.params.id);
+    const category = await categoryService.getById(id);
+    res.json({ success: true, data: category });
   }
 
   async create(req: Request, res: Response): Promise<void> {
-    try {
-      const category = await categoryService.create(req.body as CreateCategoryDto);
-      res.status(201).json({ success: true, data: category });
-    } catch (error) {
-      const err = error as { statusCode?: number; message: string };
-      res.status(err.statusCode ?? 500).json({
-        success: false,
-        message: err.message,
-        errors: [],
-      });
-    }
+    const category = await categoryService.create(req.body as CreateCategoryDto);
+    res.status(201).json({ success: true, data: category });
   }
 
   async update(req: Request, res: Response): Promise<void> {
-    try {
-      const id = String(req.params.id);
-      const category = await categoryService.update(id, req.body as UpdateCategoryDto);
-      res.json({ success: true, data: category });
-    } catch (error) {
-      const err = error as { statusCode?: number; message: string };
-      res.status(err.statusCode ?? 500).json({
-        success: false,
-        message: err.message,
-        errors: [],
-      });
-    }
+    const id = String(req.params.id);
+    const category = await categoryService.update(id, req.body as UpdateCategoryDto);
+    res.json({ success: true, data: category });
   }
 
   async delete(req: Request, res: Response): Promise<void> {
-    try {
-      const id = String(req.params.id);
-      await categoryService.delete(id);
-      res.status(204).send();
-    } catch (error) {
-      const err = error as { statusCode?: number; message: string };
-      res.status(err.statusCode ?? 500).json({
-        success: false,
-        message: err.message,
-        errors: [],
-      });
-    }
+    const id = String(req.params.id);
+    await categoryService.delete(id);
+    res.status(204).send();
   }
 }
 
