@@ -3,6 +3,7 @@ import {
   Stack,
   Title,
   TextInput,
+  NumberInput,
   Select,
   Button,
   Group,
@@ -22,6 +23,8 @@ export function SaleEditPage() {
 
   const [customerName, setCustomerName] = useState("");
   const [customerContact, setCustomerContact] = useState("");
+  const [quantity, setQuantity] = useState<number | null>(null);
+  const [salePrice, setSalePrice] = useState<number | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
 
@@ -37,6 +40,8 @@ export function SaleEditPage() {
         data: {
           customerName: customerName !== "" ? customerName : s.customerName,
           customerContact: customerContact !== "" ? customerContact : (s.customerContact ?? undefined),
+          quantity: quantity ?? s.quantity,
+          salePrice: salePrice ?? s.salePrice,
           paymentMethod: paymentMethod ?? (s.paymentMethod ?? undefined),
           notes: notes !== "" ? notes : (s.notes ?? undefined),
         },
@@ -60,6 +65,23 @@ export function SaleEditPage() {
         label={t("sales.customerContact")}
         value={customerContact !== "" ? customerContact : (s.customerContact ?? "")}
         onChange={(e) => setCustomerContact(e.currentTarget.value)}
+      />
+
+      <NumberInput
+        label={t("sales.quantity")}
+        value={quantity !== null ? quantity : s.quantity}
+        onChange={(v) => setQuantity(typeof v === "number" ? v : null)}
+        min={1}
+        required
+      />
+
+      <NumberInput
+        label={t("sales.salePrice")}
+        value={salePrice !== null ? salePrice : s.salePrice}
+        onChange={(v) => setSalePrice(typeof v === "number" ? v : null)}
+        min={0}
+        decimalScale={2}
+        required
       />
 
       <Select

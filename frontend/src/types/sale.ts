@@ -12,5 +12,6 @@ export interface ManualSale {
   saleDate: string;
   createdAt: string;
   updatedAt: string;
+  productName?: string | null;
   product?: Product;
 }

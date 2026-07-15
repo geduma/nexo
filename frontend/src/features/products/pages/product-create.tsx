@@ -3,7 +3,6 @@ import { Stack, Title } from "@mantine/core";
 import { useTranslation } from "react-i18next";
 import { ProductFormComponent } from "../components/product-form";
 import { useCreateProduct } from "../hooks/use-products";
-import { useUploadImage } from "../hooks/use-images";
 import { apiClient } from "../../../services/api/client";
 import type { ImageFile } from "../../../components/common/image-upload";
 

@@ -17,7 +17,7 @@ function isTokenExpired(): boolean {
   return Date.now() - lastActivity > IDLE_TIMEOUT_MS;
 }
 
-export const useAuthStore = create<AuthState>((set, get) => {
+export const useAuthStore = create<AuthState>((set) => {
   const storedToken = localStorage.getItem("token");
   let valid = !!storedToken;
   if (storedToken && isTokenExpired()) {

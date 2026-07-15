@@ -158,9 +158,15 @@ export class SaleRepository {
         existing.totalQuantity += row.quantity;
         existing.totalRevenue += Number(row.sale_price);
       } else {
+        const productData = row.products as { name: string } | { name: string }[] | null;
+        const productName = productData
+          ? Array.isArray(productData)
+            ? productData[0]?.name
+            : productData.name
+          : "Unknown";
         grouped.set(pid, {
           productId: pid,
-          productName: (row.products as { name: string }[] | null)?.[0]?.name ?? "Unknown",
+          productName: productName ?? "Unknown",
           totalQuantity: row.quantity,
           totalRevenue: Number(row.sale_price),
         });

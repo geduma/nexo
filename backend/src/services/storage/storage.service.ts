@@ -7,7 +7,7 @@ const STORAGE_FOLDER = "";
 
 export class StorageService {
   async ensureBucket(): Promise<boolean> {
-    const { data: objects, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from(env.SUPABASE_STORAGE_BUCKET)
       .list(undefined, { limit: 1 });
 
@@ -47,7 +47,7 @@ export class StorageService {
     const filename = `${uuidv4()}-${timestamp}.${extension}`;
     const path = `${STORAGE_FOLDER}${productId}/${filename}`;
 
-    const { data: uploadData, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from(env.SUPABASE_STORAGE_BUCKET)
       .upload(path, file.buffer, {
         contentType: file.mimetype,

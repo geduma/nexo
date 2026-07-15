@@ -18,15 +18,6 @@ export class ProductService {
     return { ...product, images };
   }
 
-  async getPublicById(id: string) {
-    const product = await productRepository.findById(id);
-    if (!product || !product.isVisible) {
-      throw Object.assign(new Error("Product not found"), { statusCode: 404 });
-    }
-    const images = await imageRepository.findByProduct(id);
-    return { ...product, images };
-  }
-
   async create(data: CreateProductDto) {
     const category = await categoryRepository.findById(data.categoryId);
     if (!category) {

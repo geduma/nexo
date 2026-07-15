@@ -21,7 +21,7 @@ export function DashboardPage() {
 
   const recentSales = (salesData?.data ?? []).map((s) => ({
     id: s.id,
-    productName: s.product?.name ?? "-",
+    productName: s.productName ?? "-",
     customerName: s.customerName,
     quantity: s.quantity,
     salePrice: s.salePrice,

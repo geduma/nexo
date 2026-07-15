@@ -1,4 +1,3 @@
-import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { env } from "../../config/env.js";
 import type { AuthPayload } from "../../middleware/auth.js";

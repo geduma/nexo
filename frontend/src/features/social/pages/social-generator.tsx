@@ -9,8 +9,6 @@ import {
   Paper,
   Text,
   Box,
-  ActionIcon,
-  Tooltip,
 } from "@mantine/core";
 import { Download, Copy, Check } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -156,32 +154,24 @@ export function SocialGeneratorPage() {
               onChange={(v) => v && setTemplate(v as TemplateType)}
             />
 
-            <Text size="sm" fw={500}>Fondo degradado</Text>
-            <SimpleGrid cols={4} spacing="xs">
-              {GRADIENT_PRESETS.map((preset) => (
-                <Tooltip key={preset.label} label={preset.label}>
-                  <ActionIcon
-                    variant="outline"
-                    size="lg"
-                    radius="sm"
-                    onClick={() => {
-                      setGradientStart(preset.start);
-                      setGradientMid(preset.mid);
-                      setGradientEnd(preset.end);
-                    }}
-                    style={{
-                      background: `linear-gradient(135deg, ${preset.start}, ${preset.mid}, ${preset.end})`,
-                      border:
-                        gradientStart === preset.start &&
-                        gradientMid === preset.mid &&
-                        gradientEnd === preset.end
-                          ? "2px solid white"
-                          : "2px solid transparent",
-                    }}
-                  />
-                </Tooltip>
-              ))}
-            </SimpleGrid>
+            <Select
+              label="Fondo degradado"
+              data={GRADIENT_PRESETS.map((p) => ({
+                value: p.label,
+                label: p.label,
+              }))}
+              value={GRADIENT_PRESETS.find(
+                (p) => p.start === gradientStart && p.mid === gradientMid && p.end === gradientEnd
+              )?.label ?? "Oscuro"}
+              onChange={(label) => {
+                const preset = GRADIENT_PRESETS.find((p) => p.label === label);
+                if (preset) {
+                  setGradientStart(preset.start);
+                  setGradientMid(preset.mid);
+                  setGradientEnd(preset.end);
+                }
+              }}
+            />
 
             <Group>
               <Button

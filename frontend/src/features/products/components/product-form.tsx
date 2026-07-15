@@ -25,7 +25,6 @@ interface ProductFormComponentProps {
   onSubmit: (data: ProductForm, imageFiles?: ImageFile[]) => void;
   loading?: boolean;
   existingImages?: ImageFile[];
-  productId?: string;
 }
 
 export function ProductFormComponent({
@@ -33,7 +32,6 @@ export function ProductFormComponent({
   onSubmit,
   loading = false,
   existingImages,
-  productId,
 }: ProductFormComponentProps) {
   const { t } = useTranslation();
   const [imageFiles, setImageFiles] = useState<ImageFile[]>(existingImages ?? []);

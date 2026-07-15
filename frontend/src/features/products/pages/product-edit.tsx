@@ -41,7 +41,6 @@ export function ProductEditPage() {
             return;
           }
 
-          const existingIds = new Set(existingImages.map((img) => img.id));
           const toDelete = existingImages.filter((img) => !imageFiles.some((f) => f.id === img.id));
           const toUpload = imageFiles.filter((img) => !img.id && img.file);
 
@@ -93,7 +92,6 @@ export function ProductEditPage() {
         onSubmit={handleSubmit}
         loading={updateMutation.isPending}
         existingImages={existingImages}
-        productId={id}
       />
     </Stack>
   );
