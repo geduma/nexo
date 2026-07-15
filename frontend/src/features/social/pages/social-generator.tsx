@@ -1,10 +1,12 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import {
   Stack,
   Title,
   Select,
   Button,
   Group,
+  Switch,
+  ColorInput,
   SimpleGrid,
   Paper,
   Text,
@@ -39,26 +41,70 @@ const TEMPLATES: Record<TemplateType, { label: string; width: number; height: nu
   landscape: { label: "Paisaje (1200x628)", width: 1200, height: 628 },
 };
 
-const GRADIENT_PRESETS = [
-  { label: "Oscuro", start: "#1a1a2e", mid: "#16213e", end: "#0f3460" },
-  { label: "Azul", start: "#0c4a6e", mid: "#0369a1", end: "#0284c7" },
-  { label: "Verde", start: "#064e3b", mid: "#047857", end: "#059669" },
-  { label: "Púrpura", start: "#4c1d95", mid: "#6d28d9", end: "#7c3aed" },
-  { label: "Rosa", start: "#831843", mid: "#9d174d", end: "#be185d" },
-  { label: "Naranja", start: "#7c2d12", mid: "#9a3412", end: "#c2410c" },
-  { label: "Gris", start: "#1f2937", mid: "#374151", end: "#4b5563" },
-  { label: "Carbón", start: "#111827", mid: "#1f2937", end: "#374151" },
-];
+function hexToRgb(hex: string) {
+  const h = hex.replace("#", "");
+  return {
+    r: parseInt(h.substring(0, 2), 16) || 0,
+    g: parseInt(h.substring(2, 4), 16) || 0,
+    b: parseInt(h.substring(4, 6), 16) || 0,
+  };
+}
+
+function rgbToHex(r: number, g: number, b: number) {
+  const clamp = (v: number) => Math.min(255, Math.max(0, v));
+  return `#${[clamp(r), clamp(g), clamp(b)].map((v) => v.toString(16).padStart(2, "0")).join("")}`;
+}
+
+function generateGradient(hex: string) {
+  const { r, g, b } = hexToRgb(hex);
+  const mid = rgbToHex(Math.round(r * 0.7), Math.round(g * 0.7), Math.round(b * 0.7));
+  const end = rgbToHex(Math.round(r * 0.45), Math.round(g * 0.45), Math.round(b * 0.45));
+  return { start: hex, mid, end };
+}
+
+async function extractColorFromImage(url: string): Promise<string> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = 50;
+      canvas.height = 50;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) { resolve("#1a1a2e"); return; }
+      ctx.drawImage(img, 0, 0, 50, 50);
+      const imageData = ctx.getImageData(0, 0, 50, 50).data;
+      const buckets = new Map<string, number>();
+      for (let i = 0; i < imageData.length; i += 16) {
+        const r = imageData[i] as number;
+        const g = imageData[i + 1] as number;
+        const b = imageData[i + 2] as number;
+        const a = imageData[i + 3] as number;
+        if (a < 128) continue;
+        const key = `${Math.round(r / 32) * 32},${Math.round(g / 32) * 32},${Math.round(b / 32) * 32}`;
+        buckets.set(key, (buckets.get(key) ?? 0) + 1);
+      }
+      if (buckets.size === 0) { resolve("#1a1a2e"); return; }
+      const top = [...buckets.entries()].sort((a, b) => b[1] - a[1])[0]![0]!;
+      const [r, g, b] = top.split(",").map(Number);
+      resolve(rgbToHex(r!, g!, b!));
+    };
+    img.onerror = () => resolve("#1a1a2e");
+    img.src = url;
+  });
+}
 
 export function SocialGeneratorPage() {
   const { t } = useTranslation();
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
   const [template, setTemplate] = useState<TemplateType>("square");
   const [copied, setCopied] = useState(false);
-  const [gradientStart, setGradientStart] = useState("#1a1a2e");
-  const [gradientMid, setGradientMid] = useState("#16213e");
-  const [gradientEnd, setGradientEnd] = useState("#0f3460");
+  const [downloading, setDownloading] = useState(false);
+  const [showPrice, setShowPrice] = useState(true);
+  const [baseColor, setBaseColor] = useState("#1a1a2e");
   const previewRef = useRef<HTMLDivElement>(null);
+
+  const gradient = useMemo(() => generateGradient(baseColor), [baseColor]);
 
   const { data: products } = useQuery<Product[]>({
     queryKey: ["products-select"],
@@ -79,6 +125,16 @@ export function SocialGeneratorPage() {
   const product = products?.find((p) => p.id === selectedProduct);
   const settingsData = settings?.data;
 
+  useEffect(() => {
+    const url = product?.primaryImageUrl;
+    if (!url) return;
+    let cancelled = false;
+    extractColorFromImage(url).then((color) => {
+      if (!cancelled) setBaseColor(color);
+    });
+    return () => { cancelled = true; };
+  }, [product?.primaryImageUrl]);
+
   const productOptions = (products ?? []).map((p) => ({
     value: p.id,
     label: p.name,
@@ -93,7 +149,9 @@ export function SocialGeneratorPage() {
     if (!product || !settingsData) return "";
     const symbol = settingsData.currencySymbol ?? "$";
     let text = `${product.name}\n\n`;
-    text += `${symbol} ${product.priceSale.toLocaleString()}\n\n`;
+    if (showPrice) {
+      text += `${symbol} ${product.priceSale.toLocaleString()}\n\n`;
+    }
     if (product.description) {
       text += `${product.description}\n\n`;
     }
@@ -106,6 +164,7 @@ export function SocialGeneratorPage() {
 
   const handleDownload = async () => {
     if (!previewRef.current) return;
+    setDownloading(true);
     try {
       const dataUrl = await toPng(previewRef.current, {
         width: TEMPLATES[template].width,
@@ -118,6 +177,8 @@ export function SocialGeneratorPage() {
       link.click();
     } catch {
       // error
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -154,30 +215,26 @@ export function SocialGeneratorPage() {
               onChange={(v) => v && setTemplate(v as TemplateType)}
             />
 
-            <Select
-              label="Fondo degradado"
-              data={GRADIENT_PRESETS.map((p) => ({
-                value: p.label,
-                label: p.label,
-              }))}
-              value={GRADIENT_PRESETS.find(
-                (p) => p.start === gradientStart && p.mid === gradientMid && p.end === gradientEnd
-              )?.label ?? "Oscuro"}
-              onChange={(label) => {
-                const preset = GRADIENT_PRESETS.find((p) => p.label === label);
-                if (preset) {
-                  setGradientStart(preset.start);
-                  setGradientMid(preset.mid);
-                  setGradientEnd(preset.end);
-                }
-              }}
+            <ColorInput
+              label="Color"
+              value={baseColor}
+              onChange={setBaseColor}
+              size="xs"
+            />
+
+            <Switch
+              label="Mostrar precio"
+              checked={showPrice}
+              onChange={(e) => setShowPrice(e.currentTarget.checked)}
+              size="sm"
             />
 
             <Group>
               <Button
                 leftSection={<Download size={16} />}
                 onClick={handleDownload}
-                disabled={!product}
+                disabled={!product || downloading}
+                loading={downloading}
               >
                 Descargar PNG
               </Button>
@@ -201,7 +258,7 @@ export function SocialGeneratorPage() {
               style={{
                 width: "100%",
                 aspectRatio: `${TEMPLATES[template].width} / ${TEMPLATES[template].height}`,
-                background: `linear-gradient(135deg, ${gradientStart} 0%, ${gradientMid} 50%, ${gradientEnd} 100%)`,
+                background: `linear-gradient(135deg, ${gradient.start} 0%, ${gradient.mid} 50%, ${gradient.end} 100%)`,
                 borderRadius: "var(--mantine-radius-md)",
                 overflow: "hidden",
                 display: "flex",
@@ -224,9 +281,11 @@ export function SocialGeneratorPage() {
                 />
               )}
               <Text fw={700} size="xl">{product.name}</Text>
-              <Text fw={600} size="lg" mt={4}>
-                {settingsData?.currencySymbol ?? "$"} {product.priceSale.toLocaleString()}
-              </Text>
+              {showPrice && (
+                <Text fw={600} size="lg" mt={4}>
+                  {settingsData?.currencySymbol ?? "$"} {product.priceSale.toLocaleString()}
+                </Text>
+              )}
               {product.description && (
                 <Text size="sm" c="dimmed" mt={4} maw="80%">
                   {product.description.slice(0, 100)}
