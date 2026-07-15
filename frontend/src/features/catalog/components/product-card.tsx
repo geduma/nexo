@@ -15,9 +15,10 @@ interface ProductCardProps {
   product: CatalogProductCard;
   whatsappNumber?: string;
   businessName?: string;
+  onViewDetails?: (productId: string) => void;
 }
 
-export function ProductCard({ product, whatsappNumber }: ProductCardProps) {
+export function ProductCard({ product, whatsappNumber, onViewDetails }: ProductCardProps) {
   const { t } = useTranslation();
 
   const getWhatsAppUrl = () => {
@@ -39,7 +40,8 @@ export function ProductCard({ product, whatsappNumber }: ProductCardProps) {
             decoding="async"
             w="100%"
             h={200}
-            style={{ objectFit: "cover", borderRadius: "var(--mantine-radius-md)" }}
+            onClick={() => onViewDetails?.(product.id)}
+            style={{ objectFit: "cover", borderRadius: "var(--mantine-radius-md)", cursor: "pointer" }}
           />
         )}
         <Group justify="space-between">

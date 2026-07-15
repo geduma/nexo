@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Box, Stack, Title, SimpleGrid } from "@mantine/core";
+import { Box, Stack, Title, SimpleGrid, Modal, Text, Badge, Group, Button, ActionIcon } from "@mantine/core";
+import { X, ChevronLeft, ChevronRight, MessageCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../services/api/client";
@@ -72,6 +73,39 @@ export function CatalogHomePage() {
   const featuredProducts = allProducts.filter((p) => p.isFeatured);
   const categories = categoriesData?.data ?? [];
 
+  const [detailProductId, setDetailProductId] = useState<string | null>(null);
+  const [detailImageIndex, setDetailImageIndex] = useState(0);
+
+  const { data: detailData } = useQuery<{
+    data: {
+      name: string;
+      description: string | null;
+      priceSale: number;
+      availabilityStatus: string;
+      images: Array<{ id: string; imageUrl: string; isPrimary: boolean }>;
+    };
+  }>({
+    queryKey: ["product-detail", detailProductId],
+    queryFn: async () => {
+      const response = await apiClient.get(`/products/${detailProductId}`);
+      return response.data;
+    },
+    enabled: !!detailProductId,
+  });
+
+  const detailProduct = detailData?.data;
+  const detailImages = detailProduct?.images ?? [];
+
+  const openDetail = (id: string) => {
+    setDetailProductId(id);
+    setDetailImageIndex(0);
+  };
+
+  const closeDetail = () => {
+    setDetailProductId(null);
+    setDetailImageIndex(0);
+  };
+
   return (
     <Box p="md">
       <Stack gap="lg" maw={1200} mx="auto">
@@ -106,6 +140,7 @@ export function CatalogHomePage() {
                       key={product.id}
                       product={product}
                       whatsappNumber={settingsData?.whatsappNumber}
+                      onViewDetails={openDetail}
                     />
                   ))}
                 </SimpleGrid>
@@ -128,6 +163,7 @@ export function CatalogHomePage() {
                     product={product}
                     whatsappNumber={settingsData?.whatsappNumber}
                     businessName={settingsData?.businessName}
+                    onViewDetails={openDetail}
                   />
                 ))}
               </SimpleGrid>
@@ -137,6 +173,104 @@ export function CatalogHomePage() {
 
         <CatalogFooter businessName={settingsData?.businessName ?? t("app.name")} />
       </Stack>
+
+      <Modal
+        opened={!!detailProductId}
+        onClose={closeDetail}
+        size="lg"
+        padding={0}
+        withCloseButton={false}
+      >
+        {detailProduct && (
+          <Box style={{ position: "relative" }}>
+            <ActionIcon
+              variant="subtle"
+              color="gray"
+              onClick={closeDetail}
+              style={{ position: "absolute", top: 8, right: 8, zIndex: 10 }}
+            >
+              <X size={20} />
+            </ActionIcon>
+
+            {detailImages.length > 0 && (
+              <Box style={{ position: "relative" }}>
+                <Box
+                  component="img"
+                  src={detailImages[detailImageIndex]?.imageUrl}
+                  alt={detailProduct.name}
+                  w="100%"
+                  h={400}
+                  style={{ objectFit: "cover" }}
+                />
+                {detailImages.length > 1 && (
+                  <>
+                    <ActionIcon
+                      variant="filled"
+                      color="dark"
+                      style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)" }}
+                      onClick={() => setDetailImageIndex((i) => (i === 0 ? detailImages.length - 1 : i - 1))}
+                    >
+                      <ChevronLeft size={20} />
+                    </ActionIcon>
+                    <ActionIcon
+                      variant="filled"
+                      color="dark"
+                      style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)" }}
+                      onClick={() => setDetailImageIndex((i) => (i === detailImages.length - 1 ? 0 : i + 1))}
+                    >
+                      <ChevronRight size={20} />
+                    </ActionIcon>
+                    <Group justify="center" gap={4} pt={4} pb="sm">
+                      {detailImages.map((_, idx) => (
+                        <Box
+                          key={idx}
+                          w={8}
+                          h={8}
+                          style={{
+                            borderRadius: "50%",
+                            backgroundColor: idx === detailImageIndex ? "var(--mantine-color-blue-6)" : "var(--mantine-color-gray-4)",
+                            cursor: "pointer",
+                          }}
+                          onClick={() => setDetailImageIndex(idx)}
+                        />
+                      ))}
+                    </Group>
+                  </>
+                )}
+              </Box>
+            )}
+
+            <Stack p="md" gap="xs">
+              <Text fw={700} size="lg">{detailProduct.name}</Text>
+              <Text fw={600} size="xl">${detailProduct.priceSale.toLocaleString()}</Text>
+              <Badge
+                color={detailProduct.availabilityStatus === "IN_STOCK" ? "green" : "yellow"}
+                w="fit-content"
+              >
+                {t(`availability.${detailProduct.availabilityStatus}`)}
+              </Badge>
+              {detailProduct.description && (
+                <Text size="sm" c="dimmed">{detailProduct.description}</Text>
+              )}
+              {settingsData?.whatsappNumber && (
+                <Button
+                  component="a"
+                  href={`https://wa.me/${settingsData.whatsappNumber}?text=${encodeURIComponent(
+                    `Hola, me interesa el producto: ${detailProduct.name} - $${detailProduct.priceSale.toLocaleString()} (ref: ${window.location.origin}/product/${detailProductId})`
+                  )}`}
+                  target="_blank"
+                  color="green"
+                  leftSection={<MessageCircle size={16} />}
+                  fullWidth
+                  mt="sm"
+                >
+                  {t("catalog.whatsappButton")}
+                </Button>
+              )}
+            </Stack>
+          </Box>
+        )}
+      </Modal>
     </Box>
   );
 }
