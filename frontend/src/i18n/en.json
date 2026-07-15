@@ -155,6 +155,8 @@
     "featured": "Featured",
     "allProducts": "All products",
     "whatsappButton": "Contact via WhatsApp",
+    "buyButton": "Buy",
+    "pendingImplementation": "Purchase functionality pending implementation",
     "relatedProducts": "Related Products",
     "noProducts": "No products found",
     "backToCatalog": "Back to Catalog"

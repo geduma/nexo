@@ -10,7 +10,8 @@ import {
   SimpleGrid,
   Divider,
 } from "@mantine/core";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ShoppingCart } from "lucide-react";
+import { notifications } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../services/api/client";
@@ -123,6 +124,23 @@ export function CatalogProductPage() {
 
             {p.description && (
               <Text size="sm" c="dimmed">{p.description}</Text>
+            )}
+
+            {p.availabilityStatus === "IN_STOCK" && (
+              <Button
+                color="blue"
+                leftSection={<ShoppingCart size={16} />}
+                fullWidth
+                size="lg"
+                onClick={() =>
+                  notifications.show({
+                    message: t("catalog.pendingImplementation"),
+                    color: "yellow",
+                  })
+                }
+              >
+                {t("catalog.buyButton")}
+              </Button>
             )}
 
             {settingsData?.whatsappNumber && (

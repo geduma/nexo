@@ -1,6 +1,7 @@
 import { Paper, Stack, Text, Badge, Button, Group, Box } from "@mantine/core";
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, ShoppingCart } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { notifications } from "@mantine/notifications";
 
 interface CatalogProductCard {
   id: string;
@@ -54,6 +55,21 @@ export function ProductCard({ product, whatsappNumber, onViewDetails }: ProductC
           <Text size="xs" c="dimmed">{product.categoryName}</Text>
         )}
         <Text fw={700} size="lg">${product.priceSale.toLocaleString()}</Text>
+        {product.availabilityStatus === "IN_STOCK" && (
+          <Button
+            color="blue"
+            leftSection={<ShoppingCart size={16} />}
+            fullWidth
+            onClick={() =>
+              notifications.show({
+                message: t("catalog.pendingImplementation"),
+                color: "yellow",
+              })
+            }
+          >
+            {t("catalog.buyButton")}
+          </Button>
+        )}
         {whatsappNumber && (
           <Button
             component="a"

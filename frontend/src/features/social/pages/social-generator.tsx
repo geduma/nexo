@@ -10,13 +10,19 @@ import {
   SimpleGrid,
   Paper,
   Text,
-  Box,
 } from "@mantine/core";
 import { Download, Copy, Check } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { toPng } from "html-to-image";
 import { apiClient } from "../../../services/api/client";
+
+interface ProductImage {
+  id: string;
+  imageUrl: string;
+  isPrimary: boolean;
+  displayOrder: number;
+}
 
 interface Product {
   id: string;
@@ -34,11 +40,19 @@ interface Settings {
 }
 
 type TemplateType = "square" | "story" | "landscape";
+type LayoutType = "single" | "mosaic";
+type ImageSize = "small" | "medium" | "large";
 
 const TEMPLATES: Record<TemplateType, { label: string; width: number; height: number }> = {
   square: { label: "Cuadrado (1080x1080)", width: 1080, height: 1080 },
   story: { label: "Story (1080x1920)", width: 1080, height: 1920 },
   landscape: { label: "Paisaje (1200x628)", width: 1200, height: 628 },
+};
+
+const IMAGE_SIZES: Record<ImageSize, { label: string; maw: string; mah: string }> = {
+  small: { label: "Pequeña", maw: "50%", mah: "30%" },
+  medium: { label: "Mediana", maw: "70%", mah: "45%" },
+  large: { label: "Grande", maw: "90%", mah: "60%" },
 };
 
 function hexToRgb(hex: string) {
@@ -98,6 +112,8 @@ export function SocialGeneratorPage() {
   const { t } = useTranslation();
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
   const [template, setTemplate] = useState<TemplateType>("square");
+  const [layout, setLayout] = useState<LayoutType>("single");
+  const [imageSize, setImageSize] = useState<ImageSize>("medium");
   const [copied, setCopied] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [showPrice, setShowPrice] = useState(true);
@@ -124,6 +140,20 @@ export function SocialGeneratorPage() {
 
   const product = products?.find((p) => p.id === selectedProduct);
   const settingsData = settings?.data;
+
+  const { data: productImages } = useQuery<ProductImage[]>({
+    queryKey: ["product-images", selectedProduct],
+    queryFn: async () => {
+      const response = await apiClient.get(`/products/${selectedProduct}/images`);
+      return response.data.data;
+    },
+    enabled: !!selectedProduct && layout === "mosaic",
+  });
+
+  const allImages = useMemo(() => {
+    if (!Array.isArray(productImages) || productImages.length === 0) return [];
+    return [...productImages].sort((a, b) => a.displayOrder - b.displayOrder);
+  }, [productImages]);
 
   useEffect(() => {
     const url = product?.primaryImageUrl;
@@ -215,6 +245,29 @@ export function SocialGeneratorPage() {
               onChange={(v) => v && setTemplate(v as TemplateType)}
             />
 
+            <Select
+              label="Disposición"
+              data={[
+                { value: "single", label: "Imagen única" },
+                { value: "mosaic", label: "Mosaico" },
+              ]}
+              value={layout}
+              onChange={(v) => v && setLayout(v as LayoutType)}
+            />
+
+            {layout === "single" && (
+              <Select
+                label="Tamaño de imagen"
+                data={[
+                  { value: "small", label: "Pequeña" },
+                  { value: "medium", label: "Mediana" },
+                  { value: "large", label: "Grande" },
+                ]}
+                value={imageSize}
+                onChange={(v) => v && setImageSize(v as ImageSize)}
+              />
+            )}
+
             <ColorInput
               label="Color"
               value={baseColor}
@@ -261,41 +314,159 @@ export function SocialGeneratorPage() {
                 background: `linear-gradient(135deg, ${gradient.start} 0%, ${gradient.mid} 50%, ${gradient.end} 100%)`,
                 borderRadius: "var(--mantine-radius-md)",
                 overflow: "hidden",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                padding: "2rem",
+                display: "grid",
+                gridTemplateRows: "1fr auto",
+                padding: template === "landscape" ? "1rem" : "1.5rem",
+                boxSizing: "border-box",
                 color: "white",
                 textAlign: "center",
+                gap: "0.5rem",
               }}
             >
-              {product.primaryImageUrl && (
-                <Box
-                  component="img"
-                  src={product.primaryImageUrl}
-                  alt={product.name}
-                  maw="80%"
-                  mah="50%"
-                  style={{ objectFit: "contain", borderRadius: "8px", marginBottom: "1rem" }}
-                />
+              {layout === "single" ? (
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                  {product.primaryImageUrl && (
+                    <img
+                      src={product.primaryImageUrl}
+                      alt={product.name}
+                      style={{ objectFit: "contain", borderRadius: "8px", maxWidth: IMAGE_SIZES[imageSize].maw, maxHeight: IMAGE_SIZES[imageSize].mah }}
+                    />
+                  )}
+                </div>
+              ) : (
+                (() => {
+                  const count = allImages.length;
+                  const g = "8px";
+                  const rad = "8px";
+                  const imgStyle: React.CSSProperties = { objectFit: "cover", borderRadius: rad, width: "100%", height: "100%" };
+                  const cellStyle: React.CSSProperties = { overflow: "hidden", borderRadius: rad };
+                  const isWide = template === "landscape";
+                  const isTall = template === "story";
+
+                  if (count === 0) return null;
+
+                  if (count === 1) {
+                    return (
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", padding: `0 ${g}` }}>
+                        <img src={allImages[0]!.imageUrl} alt="" style={{ ...imgStyle, maxWidth: "100%", maxHeight: "100%" }} />
+                      </div>
+                    );
+                  }
+
+                  if (count === 2) {
+                    if (isWide) {
+                      return (
+                        <div style={{ display: "flex", gap: g, overflow: "hidden" }}>
+                          <div style={{ ...cellStyle, flex: 1 }}><img src={allImages[0]!.imageUrl} alt="" style={imgStyle} /></div>
+                          <div style={{ ...cellStyle, flex: 1 }}><img src={allImages[1]!.imageUrl} alt="" style={imgStyle} /></div>
+                        </div>
+                      );
+                    }
+                    return (
+                      <div style={{ display: "flex", flexDirection: "column", gap: g, overflow: "hidden" }}>
+                        <div style={{ ...cellStyle, flex: 1 }}><img src={allImages[0]!.imageUrl} alt="" style={imgStyle} /></div>
+                        <div style={{ ...cellStyle, flex: 1 }}><img src={allImages[1]!.imageUrl} alt="" style={imgStyle} /></div>
+                      </div>
+                    );
+                  }
+
+                  if (count === 3) {
+                    if (isWide) {
+                      return (
+                        <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gridTemplateRows: "1fr 1fr", gap: g, overflow: "hidden" }}>
+                          <div style={{ ...cellStyle, gridRow: "1 / 3" }}><img src={allImages[0]!.imageUrl} alt="" style={imgStyle} /></div>
+                          <div style={cellStyle}><img src={allImages[1]!.imageUrl} alt="" style={imgStyle} /></div>
+                          <div style={cellStyle}><img src={allImages[2]!.imageUrl} alt="" style={imgStyle} /></div>
+                        </div>
+                      );
+                    }
+                    return (
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "1.5fr 1fr", gap: g, overflow: "hidden" }}>
+                        <div style={{ ...cellStyle, gridColumn: "1 / 3" }}><img src={allImages[0]!.imageUrl} alt="" style={imgStyle} /></div>
+                        <div style={cellStyle}><img src={allImages[1]!.imageUrl} alt="" style={imgStyle} /></div>
+                        <div style={cellStyle}><img src={allImages[2]!.imageUrl} alt="" style={imgStyle} /></div>
+                      </div>
+                    );
+                  }
+
+                  if (count === 4) {
+                    if (isWide) {
+                      return (
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gridTemplateRows: "1fr 1fr", gap: g, overflow: "hidden" }}>
+                          <div style={{ ...cellStyle, gridColumn: "1 / 3", gridRow: "1 / 3" }}><img src={allImages[0]!.imageUrl} alt="" style={imgStyle} /></div>
+                          <div style={cellStyle}><img src={allImages[1]!.imageUrl} alt="" style={imgStyle} /></div>
+                          <div style={cellStyle}><img src={allImages[2]!.imageUrl} alt="" style={imgStyle} /></div>
+                          <div style={{ ...cellStyle, gridColumn: "2 / 5" }}><img src={allImages[3]!.imageUrl} alt="" style={imgStyle} /></div>
+                        </div>
+                      );
+                    }
+                    if (isTall) {
+                      return (
+                        <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gridTemplateRows: "1fr 1fr 1fr", gap: g, overflow: "hidden" }}>
+                          <div style={{ ...cellStyle, gridRow: "1 / 3" }}><img src={allImages[0]!.imageUrl} alt="" style={imgStyle} /></div>
+                          <div style={cellStyle}><img src={allImages[1]!.imageUrl} alt="" style={imgStyle} /></div>
+                          <div style={cellStyle}><img src={allImages[2]!.imageUrl} alt="" style={imgStyle} /></div>
+                          <div style={{ ...cellStyle, gridColumn: "1 / 3" }}><img src={allImages[3]!.imageUrl} alt="" style={imgStyle} /></div>
+                        </div>
+                      );
+                    }
+                    return (
+                      <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gridTemplateRows: "1fr 1fr", gap: g, overflow: "hidden" }}>
+                        <div style={{ ...cellStyle, gridRow: "1 / 3" }}><img src={allImages[0]!.imageUrl} alt="" style={imgStyle} /></div>
+                        <div style={cellStyle}><img src={allImages[1]!.imageUrl} alt="" style={imgStyle} /></div>
+                        <div style={cellStyle}><img src={allImages[2]!.imageUrl} alt="" style={imgStyle} /></div>
+                        <div style={{ ...cellStyle, gridColumn: "1 / 3" }}><img src={allImages[3]!.imageUrl} alt="" style={imgStyle} /></div>
+                      </div>
+                    );
+                  }
+
+                  if (isWide) {
+                    return (
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gridTemplateRows: "1fr 1fr", gap: g, overflow: "hidden" }}>
+                        <div style={{ ...cellStyle, gridColumn: "1 / 3", gridRow: "1 / 3" }}><img src={allImages[0]!.imageUrl} alt="" style={imgStyle} /></div>
+                        <div style={cellStyle}><img src={allImages[1]!.imageUrl} alt="" style={imgStyle} /></div>
+                        <div style={cellStyle}><img src={allImages[2]!.imageUrl} alt="" style={imgStyle} /></div>
+                        <div style={cellStyle}><img src={allImages[3]!.imageUrl} alt="" style={imgStyle} /></div>
+                        <div style={cellStyle}><img src={allImages[4]!.imageUrl} alt="" style={imgStyle} /></div>
+                      </div>
+                    );
+                  }
+                  if (isTall) {
+                    return (
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "1.2fr 1fr 1fr", gap: g, overflow: "hidden" }}>
+                        <div style={{ ...cellStyle, gridColumn: "1 / 3" }}><img src={allImages[0]!.imageUrl} alt="" style={imgStyle} /></div>
+                        <div style={cellStyle}><img src={allImages[1]!.imageUrl} alt="" style={imgStyle} /></div>
+                        <div style={cellStyle}><img src={allImages[2]!.imageUrl} alt="" style={imgStyle} /></div>
+                        <div style={cellStyle}><img src={allImages[3]!.imageUrl} alt="" style={imgStyle} /></div>
+                        <div style={cellStyle}><img src={allImages[4]!.imageUrl} alt="" style={imgStyle} /></div>
+                      </div>
+                    );
+                  }
+                  return (
+                    <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gridTemplateRows: "1fr 1fr 1fr", gap: g, overflow: "hidden" }}>
+                      <div style={{ ...cellStyle, gridRow: "1 / 3" }}><img src={allImages[0]!.imageUrl} alt="" style={imgStyle} /></div>
+                      <div style={cellStyle}><img src={allImages[1]!.imageUrl} alt="" style={imgStyle} /></div>
+                      <div style={cellStyle}><img src={allImages[2]!.imageUrl} alt="" style={imgStyle} /></div>
+                      <div style={cellStyle}><img src={allImages[3]!.imageUrl} alt="" style={imgStyle} /></div>
+                      <div style={cellStyle}><img src={allImages[4]!.imageUrl} alt="" style={imgStyle} /></div>
+                    </div>
+                  );
+                })()
               )}
-              <Text fw={700} size="xl">{product.name}</Text>
-              {showPrice && (
-                <Text fw={600} size="lg" mt={4}>
-                  {settingsData?.currencySymbol ?? "$"} {product.priceSale.toLocaleString()}
-                </Text>
-              )}
-              {product.description && (
-                <Text size="sm" c="dimmed" mt={4} maw="80%">
-                  {product.description.slice(0, 100)}
-                </Text>
-              )}
-              {settingsData?.businessName && (
-                <Text size="xs" mt={8} style={{ opacity: 0.7 }}>
-                  {settingsData.businessName}
-                </Text>
-              )}
+
+              <div>
+                <Text fw={700} size="xl">{product.name}</Text>
+                {showPrice && (
+                  <Text fw={600} size="lg" mt={4}>
+                    {settingsData?.currencySymbol ?? "$"} {product.priceSale.toLocaleString()}
+                  </Text>
+                )}
+                {product.description && (
+                  <Text size="sm" style={{ opacity: 0.8 }} mt={4} maw="80%" mx="auto">
+                    {product.description.slice(0, 100)}
+                  </Text>
+                )}
+              </div>
             </div>
           ) : (
             <Text c="dimmed" ta="center" py="xl">

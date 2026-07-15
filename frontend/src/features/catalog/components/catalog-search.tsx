@@ -16,8 +16,7 @@ export function CatalogSearch({ value, onChange }: CatalogSearchProps) {
       leftSection={<Search size={16} />}
       value={value}
       onChange={(e) => onChange(e.currentTarget.value)}
-      maw={400}
-      mx="auto"
+      w={300}
       aria-label={t("catalog.search")}
     />
   );

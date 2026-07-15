@@ -2,10 +2,25 @@ import { supabase } from "../../config/database.js";
 import type { UpdateSettingsDto } from "../../validators/settings.validator.js";
 
 export class SettingsRepository {
+  private toCamelCase(row: Record<string, unknown>) {
+    return {
+      id: row.id,
+      businessName: row.business_name,
+      logoUrl: row.logo_url,
+      currency: row.currency,
+      currencySymbol: row.currency_symbol,
+      defaultLanguage: row.default_language,
+      whatsappNumber: row.whatsapp_number,
+      theme: row.theme,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+    };
+  }
+
   async get() {
     const { data, error } = await supabase.from("settings").select("*").limit(1).single();
     if (error && error.code !== "PGRST116") throw error;
-    return data ?? null;
+    return data ? this.toCamelCase(data) : null;
   }
 
   async update(data: UpdateSettingsDto) {
@@ -28,7 +43,7 @@ export class SettingsRepository {
       .select()
       .single();
     if (error) throw error;
-    return result;
+    return this.toCamelCase(result);
   }
 
   async create(data: { whatsappNumber: string }) {
@@ -38,7 +53,7 @@ export class SettingsRepository {
       .select()
       .single();
     if (error) throw error;
-    return result;
+    return this.toCamelCase(result);
   }
 }
 

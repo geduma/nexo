@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Box, Stack, Title, SimpleGrid, Modal, Text, Badge, Group, Button, ActionIcon } from "@mantine/core";
-import { X, ChevronLeft, ChevronRight, MessageCircle } from "lucide-react";
+import { Box, Stack, Title, SimpleGrid, Modal, Text, Badge, Group, Button, ActionIcon, Flex } from "@mantine/core";
+import { X, ChevronLeft, ChevronRight, MessageCircle, ShoppingCart } from "lucide-react";
+import { notifications } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../services/api/client";
@@ -114,13 +115,14 @@ export function CatalogHomePage() {
           logoUrl={settingsData?.logoUrl}
         />
 
-        <CatalogSearch value={search} onChange={setSearch} />
-
-        <CategoryFilter
-          categories={categories}
-          selected={selectedCategory}
-          onSelect={setSelectedCategory}
-        />
+        <Flex gap="md" align="center" justify="center" wrap="wrap">
+          <CatalogSearch value={search} onChange={setSearch} />
+          <CategoryFilter
+            categories={categories}
+            selected={selectedCategory}
+            onSelect={setSelectedCategory}
+          />
+        </Flex>
 
         {isLoading ? (
           <LoadingSkeleton />
@@ -252,21 +254,35 @@ export function CatalogHomePage() {
               {detailProduct.description && (
                 <Text size="sm" c="dimmed">{detailProduct.description}</Text>
               )}
-              {settingsData?.whatsappNumber && (
-                <Button
-                  component="a"
-                  href={`https://wa.me/${settingsData.whatsappNumber}?text=${encodeURIComponent(
-                    `Hola, me interesa el producto: ${detailProduct.name} - $${detailProduct.priceSale.toLocaleString()} (ref: ${window.location.origin}/product/${detailProductId})`
-                  )}`}
-                  target="_blank"
-                  color="green"
-                  leftSection={<MessageCircle size={16} />}
-                  fullWidth
-                  mt="sm"
-                >
-                  {t("catalog.whatsappButton")}
-                </Button>
-              )}
+              <Group mt="sm" grow>
+                {detailProduct.availabilityStatus === "IN_STOCK" && (
+                  <Button
+                    color="blue"
+                    leftSection={<ShoppingCart size={16} />}
+                    onClick={() =>
+                      notifications.show({
+                        message: t("catalog.pendingImplementation"),
+                        color: "yellow",
+                      })
+                    }
+                  >
+                    {t("catalog.buyButton")}
+                  </Button>
+                )}
+                {settingsData?.whatsappNumber && (
+                  <Button
+                    component="a"
+                    href={`https://wa.me/${settingsData.whatsappNumber}?text=${encodeURIComponent(
+                      `Hola, me interesa el producto: ${detailProduct.name} - $${detailProduct.priceSale.toLocaleString()} (ref: ${window.location.origin}/product/${detailProductId})`
+                    )}`}
+                    target="_blank"
+                    color="green"
+                    leftSection={<MessageCircle size={16} />}
+                  >
+                    {t("catalog.whatsappButton")}
+                  </Button>
+                )}
+              </Group>
             </Stack>
           </Box>
         )}
