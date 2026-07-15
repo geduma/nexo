@@ -10,7 +10,7 @@ export function DailySalesChart({ data }: DailySalesChartProps) {
   const { t } = useTranslation();
 
   return (
-    <Paper p="md" radius="md" withBorder>
+    <Paper p="md" withBorder>
       <Title order={4} mb="md">{t("reports.salesTrend")}</Title>
       {data.length === 0 ? (
         <p style={{ textAlign: "center", color: "var(--mantine-color-dimmed)" }}>

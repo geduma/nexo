@@ -29,7 +29,7 @@ export function QuickActions() {
   ];
 
   return (
-    <Paper p="md" radius="md" withBorder>
+    <Paper p="md" withBorder>
       <Text fw={600} mb="md">{t("dashboard.quickActions")}</Text>
       <SimpleGrid cols={{ base: 1, sm: 3 }}>
         {actions.map((action) => (

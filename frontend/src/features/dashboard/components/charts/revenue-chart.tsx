@@ -10,7 +10,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
   const { t } = useTranslation();
 
   return (
-    <MPaper p="md" radius="md" withBorder>
+    <MPaper p="md" withBorder>
       <MTitle order={4} mb="md">{t("reports.revenueByDay")}</MTitle>
       {data.length === 0 ? (
         <p style={{ textAlign: "center", color: "var(--mantine-color-dimmed)" }}>

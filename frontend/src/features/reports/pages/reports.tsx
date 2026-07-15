@@ -29,7 +29,7 @@ export function ReportsPage() {
     <Stack gap="lg" aria-label={t("reports.title")}>
       <Title order={2}>{t("reports.title")}</Title>
 
-      <Paper p="md" radius="md" withBorder component="section" aria-label="Date range filter">
+      <Paper p="md" withBorder component="section" aria-label="Date range filter">
         <Stack gap="md">
           <Title order={5}>{t("reports.dateRange")}</Title>
           <SimpleGrid cols={{ base: 1, sm: 2 }}>
@@ -52,19 +52,19 @@ export function ReportsPage() {
       </Paper>
 
       <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} component="section" aria-label="Report summary">
-        <Paper p="md" radius="md" withBorder>
+        <Paper p="md" withBorder>
           <Text size="xs" c="dimmed">{t("reports.revenue")}</Text>
           <Text fw={700} size="xl">${(summary?.totalRevenue ?? 0).toLocaleString()}</Text>
         </Paper>
-        <Paper p="md" radius="md" withBorder>
+        <Paper p="md" withBorder>
           <Text size="xs" c="dimmed">{t("reports.salesCount")}</Text>
           <Text fw={700} size="xl">{summary?.totalSales ?? 0}</Text>
         </Paper>
-        <Paper p="md" radius="md" withBorder>
+        <Paper p="md" withBorder>
           <Text size="xs" c="dimmed">{t("reports.averageTicket")}</Text>
           <Text fw={700} size="xl">${(summary?.averageSale ?? 0).toLocaleString()}</Text>
         </Paper>
-        <Paper p="md" radius="md" withBorder>
+        <Paper p="md" withBorder>
           <Text size="xs" c="dimmed">{t("reports.productsSold")}</Text>
           <Text fw={700} size="xl">{topProducts?.length ?? 0}</Text>
         </Paper>

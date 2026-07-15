@@ -47,7 +47,7 @@ export function StatCards({
   return (
     <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }}>
       {stats.map((stat) => (
-        <Paper key={stat.label} p="md" radius="md" withBorder>
+        <Paper key={stat.label} p="md" withBorder>
           <Group>
             <ThemeIcon size="lg" variant="light" color={stat.color}>
               {stat.icon}

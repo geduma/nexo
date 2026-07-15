@@ -18,7 +18,7 @@ export function RecentSales({ sales }: RecentSalesProps) {
   const { t } = useTranslation();
 
   return (
-    <Paper p="md" radius="md" withBorder>
+    <Paper p="md" withBorder>
       <Title order={4} mb="md">{t("dashboard.recentSales")}</Title>
       {sales.length === 0 ? (
         <Text c="dimmed" size="sm">{t("common.noData")}</Text>

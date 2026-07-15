@@ -33,7 +33,7 @@ export function ConfirmDialog({
   const { t } = useTranslation();
 
   return (
-    <Modal opened={opened} onClose={onClose} title={title} padding="lg" radius="md" withCloseButton={false}>
+    <Modal opened={opened} onClose={onClose} title={title} padding="lg" withCloseButton={false}>
       <Stack gap="md">
         <Text size="sm" c="dimmed">
           {message}

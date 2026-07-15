@@ -3,6 +3,7 @@ import { MantineProvider, createTheme } from "@mantine/core";
 
 const theme = createTheme({
   primaryColor: "blue",
+  defaultRadius: "lg",
   colors: {
     gray: [
       "#f8f9fa",

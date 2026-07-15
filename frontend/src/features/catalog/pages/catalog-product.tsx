@@ -105,7 +105,7 @@ export function CatalogProductPage() {
                 alt={p.name}
                 w="100%"
                 h={400}
-                style={{ objectFit: "cover", borderRadius: "var(--mantine-radius-md)" }}
+                style={{ objectFit: "cover", borderRadius: "var(--mantine-radius-lg)" }}
               />
             )}
           </Box>

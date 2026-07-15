@@ -37,7 +37,7 @@ export function Sidebar() {
             aria-label={t(item.labelKey)}
             style={({ isActive }) => ({
               display: "block",
-              borderRadius: "var(--mantine-radius-md)",
+              borderRadius: "var(--mantine-radius-lg)",
               backgroundColor: isActive ? "var(--mantine-color-blue-light)" : "transparent",
               color: isActive ? "var(--mantine-color-blue-6)" : "var(--mantine-color-dimmed)",
               textDecoration: "none",
@@ -56,7 +56,7 @@ export function Sidebar() {
           p="sm"
           onClick={logout}
           aria-label={t("auth.logout")}
-          style={{ borderRadius: "var(--mantine-radius-md)", color: "var(--mantine-color-red-6)" }}
+          style={{ borderRadius: "var(--mantine-radius-lg)", color: "var(--mantine-color-red-6)" }}
         >
           <Group gap="sm">
             <LogOut size={20} aria-hidden="true" />

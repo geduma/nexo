@@ -14,7 +14,7 @@ export function UnauthorizedPage() {
   }, [navigate]);
 
   return (
-    <Paper p="xl" maw={400} mx="auto" mt="15vh" radius="md" withBorder role="alert" aria-label="Unauthorized access">
+    <Paper p="xl" maw={400} mx="auto" mt="15vh" withBorder role="alert" aria-label="Unauthorized access">
       <Stack align="center" gap="md">
         <ShieldOff size={48} color="var(--mantine-color-red-6)" aria-hidden="true" />
         <Text fw={500} size="lg">{t("errors.unauthorized")}</Text>

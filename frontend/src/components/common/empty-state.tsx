@@ -10,7 +10,7 @@ interface EmptyStateProps {
 
 export function EmptyState({ title, description, icon, action }: EmptyStateProps) {
   return (
-    <Paper p="xl" ta="center" radius="md" withBorder>
+    <Paper p="xl" ta="center" withBorder>
       <Stack align="center" gap="md">
         <Box c="dimmed">{icon ?? <Package size={48} />}</Box>
         <div>

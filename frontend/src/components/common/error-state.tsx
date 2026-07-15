@@ -11,7 +11,7 @@ export function ErrorState({ message, onRetry }: ErrorStateProps) {
   const { t } = useTranslation();
 
   return (
-    <Paper p="xl" ta="center" radius="md" withBorder>
+    <Paper p="xl" ta="center" withBorder>
       <Stack align="center" gap="md">
         <AlertTriangle size={48} color="var(--mantine-color-red-6)" />
         <div>

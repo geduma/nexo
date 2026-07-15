@@ -228,7 +228,7 @@ export function SocialGeneratorPage() {
       <Title order={2}>{t("nav.social")}</Title>
 
       <SimpleGrid cols={{ base: 1, md: 2 }}>
-        <Paper p="md" radius="md" withBorder>
+        <Paper p="md" withBorder>
           <Stack gap="md">
             <Select
               label={t("sales.product")}
@@ -301,7 +301,7 @@ export function SocialGeneratorPage() {
           </Stack>
         </Paper>
 
-        <Paper p="md" radius="md" withBorder>
+        <Paper p="md" withBorder>
           <Title order={5} mb="md">{t("social.preview")}</Title>
           {product ? (
             <div
@@ -310,7 +310,7 @@ export function SocialGeneratorPage() {
                 width: "100%",
                 aspectRatio: `${TEMPLATES[template].width} / ${TEMPLATES[template].height}`,
                 background: `linear-gradient(135deg, ${gradient.start} 0%, ${gradient.mid} 50%, ${gradient.end} 100%)`,
-                borderRadius: "var(--mantine-radius-md)",
+                borderRadius: "var(--mantine-radius-lg)",
                 overflow: "hidden",
                 display: "grid",
                 gridTemplateRows: "1fr auto",
@@ -336,8 +336,8 @@ export function SocialGeneratorPage() {
                   const count = allImages.length;
                   const g = "8px";
                   const rad = "8px";
-                  const imgStyle: React.CSSProperties = { objectFit: "cover", borderRadius: rad, width: "100%", height: "100%" };
-                  const cellStyle: React.CSSProperties = { overflow: "hidden", borderRadius: rad };
+                  const imgStyle: React.CSSProperties = { objectFit: "cover", borderRadius: rad, width: "100%", height: "100%", display: "block" };
+                  const cellStyle: React.CSSProperties = { overflow: "hidden", borderRadius: rad, minHeight: 0 };
                   const isWide = template === "landscape";
                   const isTall = template === "story";
 
@@ -345,7 +345,7 @@ export function SocialGeneratorPage() {
 
                   if (count === 1) {
                     return (
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", padding: `0 ${g}` }}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", padding: `0 ${g}`, height: "100%" }}>
                         <img src={allImages[0]!.imageUrl} alt="" style={{ ...imgStyle, maxWidth: "100%", maxHeight: "100%" }} />
                       </div>
                     );
@@ -354,14 +354,14 @@ export function SocialGeneratorPage() {
                   if (count === 2) {
                     if (isWide) {
                       return (
-                        <div style={{ display: "flex", gap: g, overflow: "hidden" }}>
+                        <div style={{ display: "flex", gap: g, overflow: "hidden", height: "100%" }}>
                           <div style={{ ...cellStyle, flex: 1 }}><img src={allImages[0]!.imageUrl} alt="" style={imgStyle} /></div>
                           <div style={{ ...cellStyle, flex: 1 }}><img src={allImages[1]!.imageUrl} alt="" style={imgStyle} /></div>
                         </div>
                       );
                     }
                     return (
-                      <div style={{ display: "flex", flexDirection: "column", gap: g, overflow: "hidden" }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: g, overflow: "hidden", height: "100%" }}>
                         <div style={{ ...cellStyle, flex: 1 }}><img src={allImages[0]!.imageUrl} alt="" style={imgStyle} /></div>
                         <div style={{ ...cellStyle, flex: 1 }}><img src={allImages[1]!.imageUrl} alt="" style={imgStyle} /></div>
                       </div>
@@ -371,7 +371,7 @@ export function SocialGeneratorPage() {
                   if (count === 3) {
                     if (isWide) {
                       return (
-                        <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gridTemplateRows: "1fr 1fr", gap: g, overflow: "hidden" }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gridTemplateRows: "1fr 1fr", gap: g, overflow: "hidden", height: "100%" }}>
                           <div style={{ ...cellStyle, gridRow: "1 / 3" }}><img src={allImages[0]!.imageUrl} alt="" style={imgStyle} /></div>
                           <div style={cellStyle}><img src={allImages[1]!.imageUrl} alt="" style={imgStyle} /></div>
                           <div style={cellStyle}><img src={allImages[2]!.imageUrl} alt="" style={imgStyle} /></div>
@@ -379,7 +379,7 @@ export function SocialGeneratorPage() {
                       );
                     }
                     return (
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "1.5fr 1fr", gap: g, overflow: "hidden" }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "1.5fr 1fr", gap: g, overflow: "hidden", height: "100%" }}>
                         <div style={{ ...cellStyle, gridColumn: "1 / 3" }}><img src={allImages[0]!.imageUrl} alt="" style={imgStyle} /></div>
                         <div style={cellStyle}><img src={allImages[1]!.imageUrl} alt="" style={imgStyle} /></div>
                         <div style={cellStyle}><img src={allImages[2]!.imageUrl} alt="" style={imgStyle} /></div>
@@ -390,7 +390,7 @@ export function SocialGeneratorPage() {
                   if (count === 4) {
                     if (isWide) {
                       return (
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gridTemplateRows: "1fr 1fr", gap: g, overflow: "hidden" }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gridTemplateRows: "1fr 1fr", gap: g, overflow: "hidden", height: "100%" }}>
                           <div style={{ ...cellStyle, gridColumn: "1 / 3", gridRow: "1 / 3" }}><img src={allImages[0]!.imageUrl} alt="" style={imgStyle} /></div>
                           <div style={cellStyle}><img src={allImages[1]!.imageUrl} alt="" style={imgStyle} /></div>
                           <div style={cellStyle}><img src={allImages[2]!.imageUrl} alt="" style={imgStyle} /></div>
@@ -400,7 +400,7 @@ export function SocialGeneratorPage() {
                     }
                     if (isTall) {
                       return (
-                        <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gridTemplateRows: "1fr 1fr 1fr", gap: g, overflow: "hidden" }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gridTemplateRows: "1fr 1fr 1fr", gap: g, overflow: "hidden", height: "100%" }}>
                           <div style={{ ...cellStyle, gridRow: "1 / 3" }}><img src={allImages[0]!.imageUrl} alt="" style={imgStyle} /></div>
                           <div style={cellStyle}><img src={allImages[1]!.imageUrl} alt="" style={imgStyle} /></div>
                           <div style={cellStyle}><img src={allImages[2]!.imageUrl} alt="" style={imgStyle} /></div>
@@ -409,7 +409,7 @@ export function SocialGeneratorPage() {
                       );
                     }
                     return (
-                      <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gridTemplateRows: "1fr 1fr", gap: g, overflow: "hidden" }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gridTemplateRows: "1fr 1fr", gap: g, overflow: "hidden", height: "100%" }}>
                         <div style={{ ...cellStyle, gridRow: "1 / 3" }}><img src={allImages[0]!.imageUrl} alt="" style={imgStyle} /></div>
                         <div style={cellStyle}><img src={allImages[1]!.imageUrl} alt="" style={imgStyle} /></div>
                         <div style={cellStyle}><img src={allImages[2]!.imageUrl} alt="" style={imgStyle} /></div>
@@ -420,7 +420,7 @@ export function SocialGeneratorPage() {
 
                   if (isWide) {
                     return (
-                      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gridTemplateRows: "1fr 1fr", gap: g, overflow: "hidden" }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gridTemplateRows: "1fr 1fr", gap: g, overflow: "hidden", height: "100%" }}>
                         <div style={{ ...cellStyle, gridColumn: "1 / 3", gridRow: "1 / 3" }}><img src={allImages[0]!.imageUrl} alt="" style={imgStyle} /></div>
                         <div style={cellStyle}><img src={allImages[1]!.imageUrl} alt="" style={imgStyle} /></div>
                         <div style={cellStyle}><img src={allImages[2]!.imageUrl} alt="" style={imgStyle} /></div>
@@ -431,7 +431,7 @@ export function SocialGeneratorPage() {
                   }
                   if (isTall) {
                     return (
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "1.2fr 1fr 1fr", gap: g, overflow: "hidden" }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "1.2fr 1fr 1fr", gap: g, overflow: "hidden", height: "100%" }}>
                         <div style={{ ...cellStyle, gridColumn: "1 / 3" }}><img src={allImages[0]!.imageUrl} alt="" style={imgStyle} /></div>
                         <div style={cellStyle}><img src={allImages[1]!.imageUrl} alt="" style={imgStyle} /></div>
                         <div style={cellStyle}><img src={allImages[2]!.imageUrl} alt="" style={imgStyle} /></div>
@@ -441,7 +441,7 @@ export function SocialGeneratorPage() {
                     );
                   }
                   return (
-                    <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gridTemplateRows: "1fr 1fr 1fr", gap: g, overflow: "hidden" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gridTemplateRows: "1fr 1fr 1fr", gap: g, overflow: "hidden", height: "100%" }}>
                       <div style={{ ...cellStyle, gridRow: "1 / 3" }}><img src={allImages[0]!.imageUrl} alt="" style={imgStyle} /></div>
                       <div style={cellStyle}><img src={allImages[1]!.imageUrl} alt="" style={imgStyle} /></div>
                       <div style={cellStyle}><img src={allImages[2]!.imageUrl} alt="" style={imgStyle} /></div>

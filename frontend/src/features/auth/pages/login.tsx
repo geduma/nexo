@@ -31,7 +31,7 @@ export function LoginPage() {
   };
 
   return (
-    <Paper p="xl" maw={400} mx="auto" mt="10vh" radius="md" withBorder>
+    <Paper p="xl" maw={400} mx="auto" mt="10vh" withBorder>
       <form onSubmit={handleSubmit}>
         <Stack gap="md">
           <Title order={2} ta="center">

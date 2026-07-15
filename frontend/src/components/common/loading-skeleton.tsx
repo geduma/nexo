@@ -11,7 +11,7 @@ export function LoadingSkeleton() {
               <Skeleton height={10} width="35%" />
               <Skeleton height={16} width="70%" />
               <Skeleton height={20} width="30%" />
-              <Skeleton height={28} width="100%" radius="md" />
+              <Skeleton height={28} width="100%" />
             </Stack>
           </Paper>
         ))}
