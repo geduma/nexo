@@ -4,7 +4,7 @@ import type { UpdateSettingsDto } from "../../validators/settings.validator.js";
 export class SettingsService {
   private defaultSettings = {
     id: "",
-    businessName: "NEXO",
+    businessName: "",
     logoUrl: null as string | null,
     currency: "COP",
     currencySymbol: "$",

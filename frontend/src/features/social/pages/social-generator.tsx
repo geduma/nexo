@@ -9,6 +9,8 @@ import {
   Paper,
   Text,
   Box,
+  ActionIcon,
+  Tooltip,
 } from "@mantine/core";
 import { Download, Copy, Check } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -39,11 +41,25 @@ const TEMPLATES: Record<TemplateType, { label: string; width: number; height: nu
   landscape: { label: "Paisaje (1200x628)", width: 1200, height: 628 },
 };
 
+const GRADIENT_PRESETS = [
+  { label: "Oscuro", start: "#1a1a2e", mid: "#16213e", end: "#0f3460" },
+  { label: "Azul", start: "#0c4a6e", mid: "#0369a1", end: "#0284c7" },
+  { label: "Verde", start: "#064e3b", mid: "#047857", end: "#059669" },
+  { label: "Púrpura", start: "#4c1d95", mid: "#6d28d9", end: "#7c3aed" },
+  { label: "Rosa", start: "#831843", mid: "#9d174d", end: "#be185d" },
+  { label: "Naranja", start: "#7c2d12", mid: "#9a3412", end: "#c2410c" },
+  { label: "Gris", start: "#1f2937", mid: "#374151", end: "#4b5563" },
+  { label: "Carbón", start: "#111827", mid: "#1f2937", end: "#374151" },
+];
+
 export function SocialGeneratorPage() {
   const { t } = useTranslation();
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
   const [template, setTemplate] = useState<TemplateType>("square");
   const [copied, setCopied] = useState(false);
+  const [gradientStart, setGradientStart] = useState("#1a1a2e");
+  const [gradientMid, setGradientMid] = useState("#16213e");
+  const [gradientEnd, setGradientEnd] = useState("#0f3460");
   const previewRef = useRef<HTMLDivElement>(null);
 
   const { data: products } = useQuery<Product[]>({
@@ -140,6 +156,33 @@ export function SocialGeneratorPage() {
               onChange={(v) => v && setTemplate(v as TemplateType)}
             />
 
+            <Text size="sm" fw={500}>Fondo degradado</Text>
+            <SimpleGrid cols={4} spacing="xs">
+              {GRADIENT_PRESETS.map((preset) => (
+                <Tooltip key={preset.label} label={preset.label}>
+                  <ActionIcon
+                    variant="outline"
+                    size="lg"
+                    radius="sm"
+                    onClick={() => {
+                      setGradientStart(preset.start);
+                      setGradientMid(preset.mid);
+                      setGradientEnd(preset.end);
+                    }}
+                    style={{
+                      background: `linear-gradient(135deg, ${preset.start}, ${preset.mid}, ${preset.end})`,
+                      border:
+                        gradientStart === preset.start &&
+                        gradientMid === preset.mid &&
+                        gradientEnd === preset.end
+                          ? "2px solid white"
+                          : "2px solid transparent",
+                    }}
+                  />
+                </Tooltip>
+              ))}
+            </SimpleGrid>
+
             <Group>
               <Button
                 leftSection={<Download size={16} />}
@@ -168,7 +211,7 @@ export function SocialGeneratorPage() {
               style={{
                 width: "100%",
                 aspectRatio: `${TEMPLATES[template].width} / ${TEMPLATES[template].height}`,
-                background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
+                background: `linear-gradient(135deg, ${gradientStart} 0%, ${gradientMid} 50%, ${gradientEnd} 100%)`,
                 borderRadius: "var(--mantine-radius-md)",
                 overflow: "hidden",
                 display: "flex",
