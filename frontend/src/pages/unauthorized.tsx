@@ -19,7 +19,7 @@ export function UnauthorizedPage() {
         <ShieldOff size={48} color="var(--mantine-color-red-6)" aria-hidden="true" />
         <Text fw={500} size="lg">{t("errors.unauthorized")}</Text>
         <Text c="dimmed" size="sm" ta="center">
-          Serás redirigido al login...
+          {t("errors.redirectingToLogin")}
         </Text>
         <Button variant="light" onClick={() => navigate("/login")}>
           {t("auth.login")}

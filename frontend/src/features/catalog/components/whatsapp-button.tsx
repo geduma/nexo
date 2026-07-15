@@ -18,9 +18,9 @@ export function WhatsAppButton({
   const { t } = useTranslation();
 
   const getMessage = () => {
-    let msg = `Hola, me interesa el producto: ${productName} - $${price.toLocaleString()}`;
+    let msg = t("catalog.whatsappMessage", { name: productName, price: price.toLocaleString() });
     if (availabilityStatus === "CHECK_SUPPLIER") {
-      msg += "\n\nConsultar disponibilidad";
+      msg += t("catalog.whatsappCheckAvailability");
     }
     return encodeURIComponent(msg);
   };

@@ -8,7 +8,7 @@ import {
   Paper,
 } from "@mantine/core";
 import { Upload, X, Star, StarOff } from "lucide-react";
-
+import { useTranslation } from "react-i18next";
 import { notifications } from "@mantine/notifications";
 
 const MAX_PRODUCT_IMAGES = 5;
@@ -35,6 +35,7 @@ export function ImageUpload({
   maxImages = MAX_PRODUCT_IMAGES,
 }: ImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const { t } = useTranslation();
 
   const handleFiles = (files: FileList | null) => {
     if (!files) return;
@@ -42,7 +43,7 @@ export function ImageUpload({
     const remaining = maxImages - images.length;
     if (remaining <= 0) {
       notifications.show({
-        message: `Máximo ${maxImages} imágenes`,
+        message: t("images.maxReached", { max: maxImages }),
         color: "yellow",
       });
       return;
@@ -54,7 +55,7 @@ export function ImageUpload({
     for (const file of validFiles) {
       if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
         notifications.show({
-          message: "Tipo de imagen inválido",
+          message: t("images.invalidType"),
           color: "red",
         });
         continue;
@@ -62,7 +63,7 @@ export function ImageUpload({
 
       if (file.size > MAX_IMAGE_SIZE_BYTES) {
         notifications.show({
-          message: "Imagen demasiado grande (máx 5MB)",
+          message: t("images.tooLarge"),
           color: "red",
         });
         continue;
@@ -125,7 +126,7 @@ export function ImageUpload({
           <Stack align="center" gap="xs">
             <Upload size={32} color="var(--mantine-color-dimmed)" />
             <Text size="sm" c="dimmed">
-              Subir imágenes ({images.length}/{maxImages})
+              {t("images.upload", { current: images.length, max: maxImages })}
             </Text>
           </Stack>
         </Paper>
@@ -164,7 +165,7 @@ export function ImageUpload({
             </Group>
             {image.isPrimary && (
               <Text size="xs" ta="center" fw={600} c="yellow" mt={4}>
-                Primary
+                {t("images.primary")}
               </Text>
             )}
           </Paper>

@@ -24,15 +24,32 @@ export function ProductCard({ product, whatsappNumber, onViewDetails }: ProductC
 
   const getWhatsAppUrl = () => {
     const message = encodeURIComponent(
-      `Hola, me interesa el producto: ${product.name} - $${product.priceSale.toLocaleString()}`
+      t("catalog.whatsappMessage", { name: product.name, price: product.priceSale.toLocaleString() })
     );
     return `https://wa.me/${whatsappNumber}?text=${message}`;
   };
 
   return (
-    <Paper p="md" radius="md" withBorder>
-      <Stack gap="sm">
-        {product.primaryImageUrl && (
+    <Paper
+      radius="lg"
+      withBorder
+      style={{
+        overflow: "hidden",
+        transition: "transform 200ms ease, box-shadow 200ms ease",
+        cursor: "pointer",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = "translateY(-4px)";
+        e.currentTarget.style.boxShadow = "var(--mantine-shadow-md)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = "translateY(0)";
+        e.currentTarget.style.boxShadow = "none";
+      }}
+      onClick={() => onViewDetails?.(product.id)}
+    >
+      <Box style={{ position: "relative", overflow: "hidden" }}>
+        {product.primaryImageUrl ? (
           <Box
             component="img"
             src={product.primaryImageUrl}
@@ -40,48 +57,81 @@ export function ProductCard({ product, whatsappNumber, onViewDetails }: ProductC
             loading="lazy"
             decoding="async"
             w="100%"
-            h={200}
-            onClick={() => onViewDetails?.(product.id)}
-            style={{ objectFit: "cover", borderRadius: "var(--mantine-radius-md)", cursor: "pointer" }}
+            h={220}
+            style={{ objectFit: "cover", transition: "transform 300ms ease" }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.05)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
           />
+        ) : (
+          <Box
+            w="100%"
+            h={220}
+            style={{
+              background: "linear-gradient(135deg, var(--mantine-color-gray-1) 0%, var(--mantine-color-gray-2) 100%)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text c="dimmed" size="sm">{t("common.noData")}</Text>
+          </Box>
         )}
-        <Group justify="space-between">
-          <Text fw={500} truncate>{product.name}</Text>
-          <Badge color={product.availabilityStatus === "IN_STOCK" ? "green" : "yellow"}>
-            {t(`availability.${product.availabilityStatus}`)}
-          </Badge>
-        </Group>
+        <Badge
+          color={product.availabilityStatus === "IN_STOCK" ? "green" : "yellow"}
+          size="sm"
+          variant="filled"
+          style={{ position: "absolute", top: 10, right: 10 }}
+        >
+          {t(`availability.${product.availabilityStatus}`)}
+        </Badge>
+      </Box>
+
+      <Stack gap={6} p="md">
         {product.categoryName && (
-          <Text size="xs" c="dimmed">{product.categoryName}</Text>
+          <Text size="xs" fw={500} tt="uppercase" c="dimmed" style={{ letterSpacing: 0.5 }}>
+            {product.categoryName}
+          </Text>
         )}
-        <Text fw={700} size="lg">${product.priceSale.toLocaleString()}</Text>
-        {product.availabilityStatus === "IN_STOCK" && (
-          <Button
-            color="blue"
-            leftSection={<ShoppingCart size={16} />}
-            fullWidth
-            onClick={() =>
-              notifications.show({
-                message: t("catalog.pendingImplementation"),
-                color: "yellow",
-              })
-            }
-          >
-            {t("catalog.buyButton")}
-          </Button>
-        )}
-        {whatsappNumber && (
-          <Button
-            component="a"
-            href={getWhatsAppUrl()}
-            target="_blank"
-            color="green"
-            leftSection={<MessageCircle size={16} />}
-            fullWidth
-          >
-            {t("catalog.whatsappButton")}
-          </Button>
-        )}
+        <Text fw={600} size="md" truncate maw="100%">
+          {product.name}
+        </Text>
+        <Text fw={700} size="lg" c="blue">
+          ${product.priceSale.toLocaleString()}
+        </Text>
+
+        <Group gap="xs" mt={4}>
+          {product.availabilityStatus === "IN_STOCK" && (
+            <Button
+              color="blue"
+              leftSection={<ShoppingCart size={14} />}
+              size="xs"
+              flex={1}
+              onClick={(e) => {
+                e.stopPropagation();
+                notifications.show({
+                  message: t("catalog.pendingImplementation"),
+                  color: "yellow",
+                });
+              }}
+            >
+              {t("catalog.buyButton")}
+            </Button>
+          )}
+          {whatsappNumber && (
+            <Button
+              component="a"
+              href={getWhatsAppUrl()}
+              target="_blank"
+              color="green"
+              leftSection={<MessageCircle size={14} />}
+              size="xs"
+              flex={1}
+              onClick={(e) => e.stopPropagation()}
+            >
+              WhatsApp
+            </Button>
+          )}
+        </Group>
       </Stack>
     </Paper>
   );

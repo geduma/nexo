@@ -1,15 +1,22 @@
-import { Stack, Skeleton, Paper } from "@mantine/core";
+import { Stack, Skeleton, SimpleGrid, Paper } from "@mantine/core";
 
 export function LoadingSkeleton() {
   return (
-    <Paper p="md" radius="md" withBorder>
-      <Stack gap="md">
-        <Skeleton height={20} width="40%" />
-        <Skeleton height={16} width="60%" />
-        <Skeleton height={16} width="80%" />
-        <Skeleton height={16} width="50%" />
-      </Stack>
-    </Paper>
+    <Stack gap="2rem">
+      <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing="lg">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <Paper key={i} radius="lg" withBorder style={{ overflow: "hidden" }}>
+            <Skeleton height={220} />
+            <Stack gap="xs" p="md">
+              <Skeleton height={10} width="35%" />
+              <Skeleton height={16} width="70%" />
+              <Skeleton height={20} width="30%" />
+              <Skeleton height={28} width="100%" radius="md" />
+            </Stack>
+          </Paper>
+        ))}
+      </SimpleGrid>
+    </Stack>
   );
 }
 

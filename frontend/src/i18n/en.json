@@ -155,6 +155,9 @@
     "featured": "Featured",
     "allProducts": "All products",
     "whatsappButton": "Contact via WhatsApp",
+    "whatsappMessage": "Hi, I'm interested in the product: {{name}} - ${{price}}",
+    "whatsappMessageWithRef": "Hi, I'm interested in the product: {{name}} - ${{price}} (ref: {{ref}})",
+    "whatsappCheckAvailability": "\n\nCheck availability",
     "buyButton": "Buy",
     "pendingImplementation": "Purchase functionality pending implementation",
     "relatedProducts": "Related Products",
@@ -164,6 +167,35 @@
   "availability": {
     "IN_STOCK": "Available",
     "CHECK_SUPPLIER": "Check Availability"
+  },
+  "social": {
+    "title": "Social Generator",
+    "product": "Product",
+    "template": "Template",
+    "templateSquare": "Square (1080x1080)",
+    "templateStory": "Story (1080x1920)",
+    "templateLandscape": "Landscape (1200x628)",
+    "layout": "Layout",
+    "layoutSingle": "Single Image",
+    "layoutMosaic": "Mosaic",
+    "imageSize": "Image Size",
+    "sizeSmall": "Small",
+    "sizeMedium": "Medium",
+    "sizeLarge": "Large",
+    "color": "Color",
+    "showPrice": "Show price",
+    "downloadPng": "Download PNG",
+    "copyText": "Copy Text",
+    "copied": "Copied!",
+    "preview": "Preview",
+    "selectProduct": "Select a product to see the preview"
+  },
+  "images": {
+    "upload": "Upload images ({{current}}/{{max}})",
+    "maxReached": "Maximum {{max}} images",
+    "invalidType": "Invalid image type",
+    "tooLarge": "Image too large (max 5MB)",
+    "primary": "Primary"
   },
   "emptyStates": {
     "noProducts": {
@@ -183,7 +215,8 @@
     "notFound": "Page not found",
     "unauthorized": "Unauthorized",
     "serverError": "Server error",
-    "networkError": "Network error"
+    "networkError": "Network error",
+    "redirectingToLogin": "Redirecting to login..."
   },
   "validation": {
     "required": "This field is required",

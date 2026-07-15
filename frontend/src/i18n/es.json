@@ -155,6 +155,9 @@
     "featured": "Destacados",
     "allProducts": "Todos los productos",
     "whatsappButton": "Consultar por WhatsApp",
+    "whatsappMessage": "Hola, me interesa el producto: {{name}} - ${{price}}",
+    "whatsappMessageWithRef": "Hola, me interesa el producto: {{name}} - ${{price}} (ref: {{ref}})",
+    "whatsappCheckAvailability": "\n\nConsultar disponibilidad",
     "buyButton": "Comprar",
     "pendingImplementation": "Función de compra en implementación",
     "relatedProducts": "Productos Relacionados",
@@ -164,6 +167,35 @@
   "availability": {
     "IN_STOCK": "Disponible",
     "CHECK_SUPPLIER": "Consultar"
+  },
+  "social": {
+    "title": "Generador Social",
+    "product": "Producto",
+    "template": "Template",
+    "templateSquare": "Cuadrado (1080x1080)",
+    "templateStory": "Story (1080x1920)",
+    "templateLandscape": "Paisaje (1200x628)",
+    "layout": "Disposición",
+    "layoutSingle": "Imagen única",
+    "layoutMosaic": "Mosaico",
+    "imageSize": "Tamaño de imagen",
+    "sizeSmall": "Pequeña",
+    "sizeMedium": "Mediana",
+    "sizeLarge": "Grande",
+    "color": "Color",
+    "showPrice": "Mostrar precio",
+    "downloadPng": "Descargar PNG",
+    "copyText": "Copiar Texto",
+    "copied": "¡Copiado!",
+    "preview": "Preview",
+    "selectProduct": "Selecciona un producto para ver el preview"
+  },
+  "images": {
+    "upload": "Subir imágenes ({{current}}/{{max}})",
+    "maxReached": "Máximo {{max}} imágenes",
+    "invalidType": "Tipo de imagen inválido",
+    "tooLarge": "Imagen demasiado grande (máx 5MB)",
+    "primary": "Principal"
   },
   "emptyStates": {
     "noProducts": {
@@ -183,7 +215,8 @@
     "notFound": "Página no encontrada",
     "unauthorized": "No autorizado",
     "serverError": "Error del servidor",
-    "networkError": "Error de red"
+    "networkError": "Error de red",
+    "redirectingToLogin": "Serás redirigido al login..."
   },
   "validation": {
     "required": "Este campo es requerido",

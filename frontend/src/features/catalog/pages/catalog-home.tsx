@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Box, Stack, Title, SimpleGrid, Modal, Text, Badge, Group, Button, ActionIcon, Flex } from "@mantine/core";
-import { X, ChevronLeft, ChevronRight, MessageCircle, ShoppingCart } from "lucide-react";
+import { Box, Stack, Title, SimpleGrid, Modal, Text, Badge, Group, Button, ActionIcon, Flex, Divider } from "@mantine/core";
+import { X, ChevronLeft, ChevronRight, MessageCircle, ShoppingCart, Sparkles } from "lucide-react";
 import { notifications } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
@@ -108,22 +108,32 @@ export function CatalogHomePage() {
   };
 
   return (
-    <Box p="md">
-      <Stack gap="lg" maw={1200} mx="auto">
-        <CatalogHeader
-          businessName={settingsData?.businessName ?? t("app.name")}
-          logoUrl={settingsData?.logoUrl}
-        />
-
-        <Flex gap="md" align="center" justify="center" wrap="wrap">
-          <CatalogSearch value={search} onChange={setSearch} />
-          <CategoryFilter
-            categories={categories}
-            selected={selectedCategory}
-            onSelect={setSelectedCategory}
+    <Box style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+      <Box
+        style={{
+          background: "linear-gradient(180deg, var(--mantine-color-gray-0) 0%, var(--mantine-color-gray-1) 100%)",
+          borderBottom: "1px solid var(--mantine-color-gray-2)",
+        }}
+      >
+        <Stack gap="lg" maw={1200} mx="auto" px="md">
+          <CatalogHeader
+            businessName={settingsData?.businessName ?? t("app.name")}
+            logoUrl={settingsData?.logoUrl}
           />
-        </Flex>
 
+          <Flex gap="md" align="center" justify="center" wrap="wrap" pb="md">
+            <CatalogSearch value={search} onChange={setSearch} />
+            <CategoryFilter
+              categories={categories}
+              selected={selectedCategory}
+              onSelect={setSelectedCategory}
+            />
+          </Flex>
+        </Stack>
+      </Box>
+
+      <Box style={{ flex: 1 }}>
+        <Stack gap="2rem" maw={1200} mx="auto" px="md" py="xl">
         {isLoading ? (
           <LoadingSkeleton />
         ) : allProducts.length === 0 ? (
@@ -132,11 +142,15 @@ export function CatalogHomePage() {
             description={t("products.noProductsDescription")}
           />
         ) : (
-          <Stack gap="xl">
+          <>
             {selectedCategory === null && featuredProducts.length > 0 && (
-              <div>
-                <Title order={3} mb="md" ta="center">{t("catalog.featured")}</Title>
-                <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 4 }}>
+              <Box>
+                <Group gap="sm" justify="center" mb="lg">
+                  <Sparkles size={20} style={{ color: "var(--mantine-color-yellow-6)" }} />
+                  <Title order={2} fw={600}>{t("catalog.featured")}</Title>
+                  <Sparkles size={20} style={{ color: "var(--mantine-color-yellow-6)" }} />
+                </Group>
+                <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing="lg">
                   {featuredProducts.map((product) => (
                     <ProductCard
                       key={product.id}
@@ -146,16 +160,17 @@ export function CatalogHomePage() {
                     />
                   ))}
                 </SimpleGrid>
-              </div>
+                <Divider mt="2rem" />
+              </Box>
             )}
 
-            <div>
-              <Title order={3} mb="md" ta="center">
+            <Box>
+              <Title order={2} fw={600} ta="center" mb="lg">
                 {selectedCategory
                   ? categories.find((c) => c.id === selectedCategory)?.name
                   : t("catalog.allProducts")}
               </Title>
-              <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 4 }}>
+              <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing="lg">
                 {(selectedCategory
                   ? allProducts
                   : allProducts.filter((p) => !p.isFeatured)
@@ -169,12 +184,13 @@ export function CatalogHomePage() {
                   />
                 ))}
               </SimpleGrid>
-            </div>
-          </Stack>
+            </Box>
+          </>
         )}
 
         <CatalogFooter businessName={settingsData?.businessName ?? t("app.name")} />
       </Stack>
+      </Box>
 
       <Modal
         opened={!!detailProductId}
@@ -273,7 +289,11 @@ export function CatalogHomePage() {
                   <Button
                     component="a"
                     href={`https://wa.me/${settingsData.whatsappNumber}?text=${encodeURIComponent(
-                      `Hola, me interesa el producto: ${detailProduct.name} - $${detailProduct.priceSale.toLocaleString()} (ref: ${window.location.origin}/product/${detailProductId})`
+                      t("catalog.whatsappMessageWithRef", {
+                        name: detailProduct.name,
+                        price: detailProduct.priceSale.toLocaleString(),
+                        ref: `${window.location.origin}/product/${detailProductId}`,
+                      })
                     )}`}
                     target="_blank"
                     color="green"

@@ -43,10 +43,10 @@ type TemplateType = "square" | "story" | "landscape";
 type LayoutType = "single" | "mosaic";
 type ImageSize = "small" | "medium" | "large";
 
-const TEMPLATES: Record<TemplateType, { label: string; width: number; height: number }> = {
-  square: { label: "Cuadrado (1080x1080)", width: 1080, height: 1080 },
-  story: { label: "Story (1080x1920)", width: 1080, height: 1920 },
-  landscape: { label: "Paisaje (1200x628)", width: 1200, height: 628 },
+const TEMPLATES: Record<TemplateType, { i18nKey: string; width: number; height: number }> = {
+  square: { i18nKey: "social.templateSquare", width: 1080, height: 1080 },
+  story: { i18nKey: "social.templateStory", width: 1080, height: 1920 },
+  landscape: { i18nKey: "social.templateLandscape", width: 1200, height: 628 },
 };
 
 const IMAGE_SIZES: Record<ImageSize, { label: string; maw: string; mah: string }> = {
@@ -172,7 +172,7 @@ export function SocialGeneratorPage() {
 
   const templateOptions = Object.entries(TEMPLATES).map(([key, val]) => ({
     value: key,
-    label: val.label,
+    label: t(val.i18nKey),
   }));
 
   const getMarketingText = () => {
@@ -239,17 +239,17 @@ export function SocialGeneratorPage() {
             />
 
             <Select
-              label="Template"
+              label={t("social.template")}
               data={templateOptions}
               value={template}
               onChange={(v) => v && setTemplate(v as TemplateType)}
             />
 
             <Select
-              label="Disposición"
+              label={t("social.layout")}
               data={[
-                { value: "single", label: "Imagen única" },
-                { value: "mosaic", label: "Mosaico" },
+                { value: "single", label: t("social.layoutSingle") },
+                { value: "mosaic", label: t("social.layoutMosaic") },
               ]}
               value={layout}
               onChange={(v) => v && setLayout(v as LayoutType)}
@@ -257,11 +257,11 @@ export function SocialGeneratorPage() {
 
             {layout === "single" && (
               <Select
-                label="Tamaño de imagen"
+                label={t("social.imageSize")}
                 data={[
-                  { value: "small", label: "Pequeña" },
-                  { value: "medium", label: "Mediana" },
-                  { value: "large", label: "Grande" },
+                  { value: "small", label: t("social.sizeSmall") },
+                  { value: "medium", label: t("social.sizeMedium") },
+                  { value: "large", label: t("social.sizeLarge") },
                 ]}
                 value={imageSize}
                 onChange={(v) => v && setImageSize(v as ImageSize)}
@@ -269,17 +269,15 @@ export function SocialGeneratorPage() {
             )}
 
             <ColorInput
-              label="Color"
+              label={t("social.color")}
               value={baseColor}
               onChange={setBaseColor}
-              size="xs"
             />
 
             <Switch
-              label="Mostrar precio"
+              label={t("social.showPrice")}
               checked={showPrice}
               onChange={(e) => setShowPrice(e.currentTarget.checked)}
-              size="sm"
             />
 
             <Group>
@@ -289,7 +287,7 @@ export function SocialGeneratorPage() {
                 disabled={!product || downloading}
                 loading={downloading}
               >
-                Descargar PNG
+                {t("social.downloadPng")}
               </Button>
               <Button
                 variant="light"
@@ -297,14 +295,14 @@ export function SocialGeneratorPage() {
                 onClick={handleCopyText}
                 disabled={!product}
               >
-                {copied ? "Copiado!" : "Copiar Texto"}
+                {copied ? t("social.copied") : t("social.copyText")}
               </Button>
             </Group>
           </Stack>
         </Paper>
 
         <Paper p="md" radius="md" withBorder>
-          <Title order={5} mb="md">Preview</Title>
+          <Title order={5} mb="md">{t("social.preview")}</Title>
           {product ? (
             <div
               ref={previewRef}
@@ -470,7 +468,7 @@ export function SocialGeneratorPage() {
             </div>
           ) : (
             <Text c="dimmed" ta="center" py="xl">
-              Selecciona un producto para ver el preview
+              {t("social.selectProduct")}
             </Text>
           )}
         </Paper>
